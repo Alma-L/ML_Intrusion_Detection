@@ -168,3 +168,15 @@ attack_detected            0
 
 ---
 
+**Figure: Feature Distributions in the Cybersecurity Intrusion Detection Dataset**
+
+![Feature Distributions](Plots/numerical_distributions.png)
+
+This figure displays histograms of key network traffic features, providing insights into their distributions and potential anomalies.
+
+- `Duration`, `PacketCount`, and `ByteCount` exhibit uniform or near-uniform distributions, suggesting a wide range of network session activities.
+- `Network Packet Size`and `IP Reputation Score` show skewed distributions, indicating possible concentration of values within certain ranges.
+- `Session Duration` follows a right-skewed pattern, with most sessions being short.
+- `Failed Logins` display distinct peaks, likely corresponding to different attack or user behavior patterns.
+
+These visualizations help identify trends and irregularities, crucial for training machine learning models in intrusion detection.
