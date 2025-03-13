@@ -42,7 +42,19 @@ print("\nSkewness of numerical features:")
 skewness_values = {feature: df_cleaned[feature].skew() for feature in numerical_features}
 print(tabulate(skewness_values.items(), headers=['Feature', 'Skewness'], tablefmt='pretty', floatfmt=".4f"))
 
-# Visualize the distribution of numerical features
+# Visualize the distribution of numerical features before cleaning
+plt.figure(figsize=(15, 10))
+for i, feature in enumerate(numerical_features, 1):
+    plt.subplot(3, 3, i)
+    sns.histplot(df[feature], kde=True, bins=30)
+    plt.title(f"Distribution of {feature}")
+plt.tight_layout()
+plt.subplots_adjust(hspace=0.5, bottom=0.1)
+plt.savefig('Plots/numerical_distributions.png')
+plt.show()
+plt.close()
+
+# Visualize the distribution of numerical features after cleaning
 plt.figure(figsize=(15, 10))
 for i, feature in enumerate(numerical_features, 1):
     plt.subplot(3, 3, i)
