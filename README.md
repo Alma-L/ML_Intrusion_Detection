@@ -151,6 +151,7 @@ unusual_time_access    13558
 attack_detected            0
 ```
 
+
 ### Skewness of Numerical Features
 ```
 +---------------------+----------------------+
@@ -166,8 +167,44 @@ attack_detected            0
 +---------------------+----------------------+
 ```
 
+### Skewness of Numerical Features (After Transformation)
+```
++---------------------+----------------------+
+|       Feature       |       Skewness       |
++---------------------+----------------------+
+|      Duration       | -0.2689631902215022  |
+|     PacketCount     | -0.28405725959531425 |
+|      ByteCount      | -0.2710843070081188  |
+| network_packet_size | -0.07553539857509789 |
+|  session_duration   | -0.09815358842221457 |
+| ip_reputation_score | 0.024647508046220106 |
+|    failed_logins    | -0.08708794457163305 |
++---------------------+----------------------+
 ---
+### Number of Outliers per Column (After Preprocessing)
+```
++---------------------+--------------------+
+|       Feature       | Outliers Remaining |
++---------------------+--------------------+
+|      Duration       |         0          |
+|     PacketCount     |         0          |
+|      ByteCount      |         0          |
+| network_packet_size |         0          |
+|  session_duration   |         0          |
+| ip_reputation_score |         0          |
+|    failed_logins    |         0          |
++---------------------+--------------------+
+---
+### Comparison of Class Distribution Before and After SMOTE
+```
 
++--------+--------------+-------------+
+| Label  | Count_Before | Count_After |
++--------+--------------+-------------+
+| Attack |    31803     |    31803    |
+| Normal |    28074     |    31803    |
++--------+--------------+-------------+
+---
 **Figure: Feature Distributions in the Cybersecurity Intrusion Detection Dataset**
 
 - Before removing outliers
