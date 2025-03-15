@@ -203,23 +203,53 @@ attack_detected            0
 | Attack |    31803     |    31803    |
 | Normal |    28074     |    31803    |
 +--------+--------------+-------------+
-
+```
 ---
 **Figure: Feature Distributions in the Cybersecurity Intrusion Detection Dataset**
 
-- Before removing outliers
-  
-![Feature Distributions](Plots/numerical_distributions.png)
 
-- After removing outliers
-  
-![Feature Distributions](Plots/numerical_distributions_cleaned.png)
+![Feature Distributions](Plots/numerical_distributions_after_cleaning_and_transformation.png)
 
-The figures display histograms of key network traffic features, providing insights into their distributions and potential anomalies.
+This image contains a series of histograms that visualize the distribution of various network metrics after preprocessing. Each histogram provides insights into the frequency distribution of a specific network-related feature. Below is a brief description of each histogram:
 
-- `Duration`, `PacketCount`, and `ByteCount` exhibit uniform or near-uniform distributions, suggesting a wide range of network session activities.
-- `Network Packet Size`and `IP Reputation Score` show skewed distributions, indicating possible concentration of values within certain ranges.
-- `Session Duration` follows a right-skewed pattern, with most sessions being short.
-- `Failed Logins` display distinct peaks, likely corresponding to different attack or user behavior patterns.
+Distribution of `Duration`: Shows the frequency of different durations (in seconds) observed in the network data. The x-axis represents the duration, and the y-axis represents the count of occurrences.
 
-These visualizations help identify trends and irregularities, crucial for training machine learning models in intrusion detection.
+Distribution of `PacketCount`: Illustrates the frequency of different packet counts per session. The x-axis represents the number of packets, and the y-axis represents the count of occurrences.
+
+Distribution of `BytesCount`: Displays the frequency of different byte counts per session. The x-axis represents the number of bytes, and the y-axis represents the count of occurrences.
+
+Distribution of `network_packet_size`: Represents the frequency of different packet sizes (in bytes). The x-axis represents the packet size, and the y-axis represents the count of occurrences.
+
+Distribution of `session_duration`: Similar to the Duration histogram, this shows the frequency of different session durations (in seconds). The x-axis represents the session duration, and the y-axis represents the count of occurrences.
+
+Distribution of `ip_reputation_score`: Visualizes the frequency of different IP reputation scores. The x-axis represents the reputation score, and the y-axis represents the count of occurrences.
+
+Distribution of `failed_logins`: Shows the frequency of different counts of failed login attempts. The x-axis represents the number of failed logins, and the y-axis represents the count of occurrences.
+
+
+**Figure:  Distribution of Network Protocol, Encryption, and Interest Type (After Preprocessing)**
+
+![Feature Distributions](Plots/categorical_distributions_after_cleaning.png)
+
+This image presents histograms showing the distribution of network protocols, encryption methods, and interest types after preprocessing. Each histogram provides a count of occurrences for different categories, aiding in the analysis of network traffic patterns and security configurations.
+
+ **Figure:  Distribution of Network Labels (After Preprocessing)**
+
+ ![Distribution of Network Labels (After Preprocessing)](Plots/label_distribution_after_cleaning.png)
+
+This image displays the distribution of network labels, distinguishing between normal activities and attacks. It provides a clear visual representation of the balance or imbalance between these categories after preprocessing, which is essential for network security analysis and anomaly detection.
+
+ **Figure:  Boxplots of Key Network and Security Metrics (After Preprocessing)**
+
+ ![Distribution of Network Labels (After Preprocessing)](Plots/boxplots_after_cleaning_and_transformation.png)
+
+ This image shows boxplots of key network and security metrics after preprocessing. It helps visualize data distribution and detect any outliers in parameters like session duration, packet count, byte count, and failed logins.
+
+
+ **Figure: Correlation Matrix of Numerical Features**
+
+![Distribution of Network Labels (After Preprocessing)](Plots/correlation_matrix_after_cleaning_and_transformation.png)
+
+This heatmap displays the correlation between different numerical features after preprocessing. The color scale indicates the strength of relationships between variables, helping to identify patterns and dependencies in the data.
+
+---
