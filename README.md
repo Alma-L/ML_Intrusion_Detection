@@ -180,7 +180,7 @@ attack_detected            0
 | ip_reputation_score | 0.024647508046220106 |
 |    failed_logins    | -0.08708794457163305 |
 +---------------------+----------------------+
----
+```
 ### Number of Outliers per Column (After Preprocessing)
 ```
 +---------------------+--------------------+
@@ -194,16 +194,16 @@ attack_detected            0
 | ip_reputation_score |         0          |
 |    failed_logins    |         0          |
 +---------------------+--------------------+
----
+```
 ### Comparison of Class Distribution Before and After SMOTE
 ```
-
 +--------+--------------+-------------+
 | Label  | Count_Before | Count_After |
 +--------+--------------+-------------+
 | Attack |    31803     |    31803    |
 | Normal |    28074     |    31803    |
 +--------+--------------+-------------+
+
 ---
 **Figure: Feature Distributions in the Cybersecurity Intrusion Detection Dataset**
 
