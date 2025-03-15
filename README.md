@@ -11,7 +11,7 @@
 - Rinesa Bislimi 
 
 ---
-The Cybersecurity Intrusion Detection Dataset contains network traffic data designed for detecting cyber threats and intrusions. It includes various network features such as packet headers, protocol types, and traffic patterns, enabling the training and evaluation of machine learning models for intrusion detection. 
+By combining two cybersecurity intrusion datasets from Kaggle, we have created a comprehensive dataset that enhances the detection of cyber threats and attacks. The Cybersecurity Intrusion Detection Dataset contains network traffic data with detailed features such as packet headers, protocol types, and traffic patterns. This enriched dataset is designed to train and evaluate machine learning models, improving their ability to detect and prevent intrusions effectively.
 
 ---
 # Data Dictionary and Example Dataset
