@@ -60,6 +60,18 @@ print("\nSkewness of numerical features (Before Transformation):")
 skewness_values_before = {feature: df_cleaned[feature].skew() for feature in numerical_features}
 print(tabulate(skewness_values_before.items(), headers=['Feature', 'Skewness'], tablefmt='pretty', floatfmt=".4f"))
 
+# Analyze skewness direction (Right or Left Skewed)
+print("\nSkewness Direction of numerical features (Before Transformation):")
+skewness_direction = {}
+for feature, skew_value in skewness_values_before.items():
+    if skew_value > 0:
+        skewness_direction[feature] = 'Right Skewed'
+    elif skew_value < 0:
+        skewness_direction[feature] = 'Left Skewed'
+    else:
+        skewness_direction[feature] = 'Symmetrical'
+print(tabulate(skewness_direction.items(), headers=['Feature', 'Skewness Direction'], tablefmt='pretty'))
+
 # Function to calculate Modified Z-Score
 def modified_zscore(series):
     median = np.median(series)
