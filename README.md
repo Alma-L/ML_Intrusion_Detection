@@ -166,6 +166,20 @@ attack_detected            0
 |    failed_logins    |  0.3940639081082175  |
 +---------------------+----------------------+
 ```
+### Skewness direction of Numerical Features
+```
++---------------------+--------------------+
+|       Feature       | Skewness Direction |
++---------------------+--------------------+
+|      Duration       |    Left Skewed     |
+|     PacketCount     |    Right Skewed    |
+|      ByteCount      |    Right Skewed    |
+| network_packet_size |    Right Skewed    |
+|  session_duration   |    Right Skewed    |
+| ip_reputation_score |    Right Skewed    |
+|    failed_logins    |    Right Skewed    |
++---------------------+--------------------+
+```
 
 ### Skewness of Numerical Features (After Transformation)
 ```
