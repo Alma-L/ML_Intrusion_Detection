@@ -4,8 +4,10 @@
 **Level:** Master  
 **Course:** Machine Learning  
 **Project Title:** Cybersecurity Intrusion Detection Dataset  
+**Professor:** Prof. Dr. Lule Ahmedi  
+**Assistant:** Dr. Sc. Mërgim H. Hoti  
 
-**Team Members:**  
+**Team Members :**  
 - Alma Latifi  
 - Endrit Balaj  
 - Rinesa Bislimi 
