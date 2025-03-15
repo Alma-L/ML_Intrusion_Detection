@@ -3,7 +3,7 @@
 *Faculty of Electrical and Computer Engineering*  
 **Level:** Master  
 **Course:** Machine Learning  
-**Project Title:** Cybersecurity Intrusion Detection Dataset  
+**Project Title:** Intrusion Detection  
 **Professor:** Prof. Dr. Lule Ahmedi  
 **Assistant:** Dr. Sc. Mërgim H. Hoti  
 
@@ -13,7 +13,7 @@
 - Rinesa Bislimi 
 
 ---
-By combining two cybersecurity intrusion datasets from Kaggle, we have created a comprehensive dataset that enhances the detection of cyber threats and attacks. The Cybersecurity Intrusion Detection Dataset contains network traffic data with detailed features such as packet headers, protocol types, and traffic patterns. This enriched dataset is designed to train and evaluate machine learning models, improving their ability to detect and prevent intrusions effectively.
+By combining two cybersecurity datasets from **Kaggle**—[Intrusion Detection Dataset ](https://www.kaggle.com/datasets/dnkumars/cybersecurity-intrusion-detection-dataset) and [Network Traffic Dataset](https://www.kaggle.com/datasets/mohdzia356/network-traffic-data-for-intrusion-detection)—we have created a comprehensive and enriched dataset to improve the detection of cyber threats and attacks. This merged dataset includes detailed network traffic information, such as packet headers, protocol types, and traffic patterns, providing a robust foundation for analyzing and identifying intrusions. Designed to train and evaluate machine learning models, this dataset enhances their ability to detect and prevent cyberattacks effectively. The combined dataset consists of **20 columns** and **90,000 rows**, offering a rich resource for advancing cybersecurity research and threat mitigation.
 
 ---
 # Data Dictionary and Example Dataset
