@@ -287,3 +287,11 @@ original_stats = {
 }
 print("\nComparison of Original Dataset and SMOTE-Applied Dataset:")
 print(tabulate(original_stats, headers='keys', tablefmt='pretty'))
+
+# Function to display the shape of the cleaned dataset
+def dataset_shape(df):
+    return f"Number of Rows: {df.shape[0]}, Number of Columns: {df.shape[1]}"
+
+# Display the shape after cleaning
+print("\nDataset Shape After Cleaning:")
+print(dataset_shape(df_cleaned))
