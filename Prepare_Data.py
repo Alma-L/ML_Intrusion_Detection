@@ -251,6 +251,9 @@ df_cleaned = pd.get_dummies(df_cleaned, columns=categorical_columns, drop_first=
 non_numeric_columns = ['SourceIP', 'DestinationIP', 'session_id', 'protocol_type']
 df_cleaned = df_cleaned.drop(columns=non_numeric_columns)
 
+df_cleaned.to_csv('Data/cleaned_intrusion_traffic_data.csv', index=False)
+print("\nCleaned dataset saved successfully!")
+
 # Prepare features and target
 X = df_cleaned.drop('Label', axis=1)  # Features
 y = df_cleaned['Label']  # Target variable
@@ -295,3 +298,6 @@ def dataset_shape(df):
 # Display the shape after cleaning
 print("\nDataset Shape After Cleaning:")
 print(dataset_shape(df_cleaned))
+
+# TO DO: Retrain the model with new  clenaned dataset
+# TO DO: Try every algoruthm for optimal results.Save the results so we can compare them later
