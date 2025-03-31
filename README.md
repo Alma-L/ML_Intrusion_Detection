@@ -224,7 +224,7 @@ attack_detected            0
 **Figure: Feature Distributions in the Cybersecurity Intrusion Detection Dataset**
 
 
-![Feature Distributions](Plots/numerical_distributions_after_cleaning_and_transformation.png)
+![Feature Distributions](Phase1/Plots/numerical_distributions_after_cleaning_and_transformation.png)
 
 This image contains a series of histograms that visualize the distribution of various network metrics after preprocessing. Each histogram provides insights into the frequency distribution of a specific network-related feature. Below is a brief description of each histogram:
 
@@ -245,26 +245,26 @@ Distribution of `failed_logins`: Shows the frequency of different counts of fail
 
 **Figure:  Distribution of Network Protocol, Encryption, and Interest Type (After Preprocessing)**
 
-![Feature Distributions](Plots/categorical_distributions_after_cleaning.png)
+![Feature Distributions](Phase1/Plots/categorical_distributions_after_cleaning.png)
 
 This image presents histograms showing the distribution of network protocols, encryption methods, and interest types after preprocessing. Each histogram provides a count of occurrences for different categories, aiding in the analysis of network traffic patterns and security configurations.
 
  **Figure:  Distribution of Network Labels (After Preprocessing)**
 
- ![Distribution of Network Labels (After Preprocessing)](Plots/label_distribution_after_cleaning.png)
+ ![Distribution of Network Labels (After Preprocessing)](Phase1/Plots/label_distribution_after_cleaning.png)
 
 This image displays the distribution of network labels, distinguishing between normal activities and attacks. It provides a clear visual representation of the balance or imbalance between these categories after preprocessing, which is essential for network security analysis and anomaly detection.
 
  **Figure:  Boxplots of Key Network and Security Metrics (After Preprocessing)**
 
- ![Distribution of Network Labels (After Preprocessing)](Plots/boxplots_after_cleaning_and_transformation.png)
+ ![Distribution of Network Labels (After Preprocessing)](Phase1/Plots/boxplots_after_cleaning_and_transformation.png)
 
  This image shows boxplots of key network and security metrics after preprocessing. It helps visualize data distribution and detect any outliers in parameters like session duration, packet count, byte count, and failed logins.
 
 
  **Figure: Correlation Matrix of Numerical Features**
 
-![Distribution of Network Labels (After Preprocessing)](Plots/correlation_matrix_after_cleaning_and_transformation.png)
+![Distribution of Network Labels (After Preprocessing)](Phase1/Plots/correlation_matrix_after_cleaning_and_transformation.png)
 
 This heatmap displays the correlation between different numerical features after preprocessing. The color scale indicates the strength of relationships between variables, helping to identify patterns and dependencies in the data.
 
