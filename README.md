@@ -270,3 +270,5 @@ This heatmap displays the correlation between different numerical features after
 
 ---
 ## Analysis and Evaluation (Retraining) - Phase II
+
+Phase 2 of the model training focuses on using various machine learning algorithms to predict cybersecurity-related outcomes. We evaluate models: Random Forest, Gradient Boosting, and LightGBM Classifier, on the dataset of network traffic and intrusion detection. The models are trained using the cleaned dataset, and their performance is evaluated using metrics like Mean Absolute Error (MAE), Mean Squared Error (MSE), Root Mean Squared Error (RMSE), and R².
