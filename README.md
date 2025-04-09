@@ -272,3 +272,40 @@ This heatmap displays the correlation between different numerical features after
 ## Analysis and Evaluation (Retraining) - Phase II
 
 Phase 2 of the model training focuses on using various machine learning algorithms to predict cybersecurity-related outcomes. We evaluate models: Random Forest, Gradient Boosting, and LightGBM Classifier, on the dataset of network traffic and intrusion detection. The models are trained using the cleaned dataset, and their performance is evaluated using metrics like Mean Absolute Error (MAE), Mean Squared Error (MSE), Root Mean Squared Error (RMSE), and R².
+
+**Figure:Top 10 important features from Random Forest**
+
+ ![Top 10 important features from Random Forest](Phase2/Plots/feature_importance_rf.png)
+
+ Top 10 most important features from the Random Forest model for attack detection prediction. Shows which network characteristics (like packet size or protocol type) most influence intrusion detection.
+
+ **Figure:Gradient Boosting model's feature**
+
+ ![Gradient Boosting model's feature)](Phase2/Plots/feature_importance_gb.png)
+
+ Gradient Boosting model's feature importance ranking for attack detection. Highlights features like connection duration or traffic patterns that best indicate malicious activity.
+
+ **Figure:LightGBM classifier's key predictors of cyber attacks**
+
+ ![LightGBM classifier's key predictors of cyber attacks](Phase2/Plots/feature_importance_lgb.png)
+
+ LightGBM classifier's key predictors of cyber attacks. Reveals security-relevant features like encrypted traffic indicators or unusual request frequencies.
+
+  **Figure:Error distribution (actual vs predicted values) for Random Forest predictions**
+
+ ![Error distribution (actual vs predicted values) for Random Forest predictions](Phase2/Plots/residual_rf.png)
+
+ Error distribution (actual vs predicted values) for Random Forest predictions. Helps identify if the model systematically over/underestimates attack probabilities.
+
+  **Figure:Residual plot for Gradient Boosting**
+
+ ![Residual plot for Gradient Boosting](Phase2/Plots/residual_gb.png)
+
+Residual plot for Gradient Boosting model showing prediction errors concentrated around zero indicates good performance in classifying network intrusions.
+
+ **Figure:LightGBM regressor's critical features for predicting session lengths.**
+
+ ![LightGBM regressor's critical features for predicting session lengths.](Phase2/Plots/lgb_feature_importance_session_duration.png)
+
+LightGBM regressor's critical features for predicting session lengths. Shows network metrics like throughput or latency that correlate with longer/shorter sessions.
+
