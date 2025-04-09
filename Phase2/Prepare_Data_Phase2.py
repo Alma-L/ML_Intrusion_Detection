@@ -134,3 +134,5 @@ plot_feature_importance(lgb_regressor, X_new.columns, "LightGBM Feature Importan
 plot_shap_summary(lgb_regressor, X_test_new, "Phase2/Plots/shap_summary_session_duration.png")
 
 print("Model Training, Evaluation, and SHAP Analysis complete!")
+
+ # TO DO:  Train  the model with SVNN and evaluate the model performance. Task for : Alma Latifi 
