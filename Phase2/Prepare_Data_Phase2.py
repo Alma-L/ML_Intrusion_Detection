@@ -10,18 +10,38 @@ import numpy as np
 import lightgbm as lgb
 from lightgbm import LGBMClassifier, LGBMRegressor
 import shap
+from sklearn.metrics import accuracy_score 
+from tabulate import tabulate
 
 def create_directory(path: str):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def evaluate_model(y_true, y_pred, model_name):
+def evaluate_model(y_true, y_pred, model_name, is_classifier=False):
     mae = mean_absolute_error(y_true, y_pred)
     mse = mean_squared_error(y_true, y_pred)
     rmse = np.sqrt(mse)
     r2 = r2_score(y_true, y_pred)
+    
     print(f"\n{model_name} Performance:")
-    print(f"MAE: {mae:.4f}, MSE: {mse:.4f}, RMSE: {rmse:.4f}, R²: {r2:.4f}\n")
+    print("+------------+---------+")
+    print("| Metric     | Value   |")
+    print("+============+=========+")
+    print(f"| MAE        | {mae:.4f}  |")
+    print(f"| MSE        | {mse:.4f}  |")
+    print(f"| RMSE       | {rmse:.4f}  |")
+    print(f"| R²         | {r2:.4f}  |")
+    
+    if is_classifier:
+        accuracy = accuracy_score(y_true, y_pred.round()) * 100
+        print(f"| Accuracy   | {accuracy:.2f}% |")
+    else:
+        threshold = 0.1
+        correct_predictions = np.sum(np.abs(y_true - y_pred) <= (threshold * np.abs(y_true)))
+        percentage_correct = (correct_predictions / len(y_true)) * 100
+        print(f"| Within {threshold*100:.0f}% | {percentage_correct:.2f}% |")
+    
+    print("+------------+---------+")
 
 def plot_feature_importance(model, feature_names, title, filename):
     """Plot and save feature importance."""
@@ -94,7 +114,7 @@ y_pred_lgb = lgb_model.predict(X_test)
 # Evaluate each model
 evaluate_model(y_test, y_pred_rf, "Random Forest")
 evaluate_model(y_test, y_pred_gb, "Gradient Boosting")
-evaluate_model(y_test, y_pred_lgb, "LightGBM Classifier")
+evaluate_model(y_test, y_pred_lgb, "LightGBM Classifier",is_classifier=True)
 
 
 
