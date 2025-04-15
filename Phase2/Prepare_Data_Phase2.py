@@ -95,6 +95,10 @@ target_column = "attack_detected"
 X = data.drop(columns=[target_column, "Label"])
 y = data[target_column]
 
+# Print columns used for prediction
+print("Columns used for intrusion detection prediction:")
+print(X.columns.tolist())
+
 # Split dataset (no scaling needed for tree-based models)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -126,6 +130,10 @@ target_column = "session_duration"
 X_new = data.drop(columns=[target_column, "Label", "attack_detected"])
 y_new = data[target_column]
 
+# Print columns used for regression prediction
+print("\nColumns used for session duration prediction:")
+print(X_new.columns.tolist())
+
 X_train_new, X_test_new, y_train_new, y_test_new = train_test_split(
     X_new, y_new, test_size=0.2, random_state=42
 )
@@ -143,4 +151,8 @@ plot_feature_importance(lgb_regressor, X_new.columns,
 )
 plot_shap_summary(lgb_regressor, X_test_new, "Phase2/Plots/shap_summary_session_duration.png")
 
-print("Analysis complete!")
+print(f"\nFeature counts:")
+print(f"- Intrusion detection: {len(X.columns)} features")
+print(f"- Session duration prediction: {len(X_new.columns)} features")
+
+print("\nAnalysis complete!")
