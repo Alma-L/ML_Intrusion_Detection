@@ -60,8 +60,15 @@ def plot_feature_importance(model, feature_names, title, filename):
     importances = pd.Series(model.feature_importances_, index=feature_names)
     
     plt.figure(figsize=(12, 6))
-    importances.nlargest(10).plot(kind='bar', title=title)
-    plt.savefig(filename)
+    sns.barplot(x=importances.nlargest(10), y=importances.nlargest(10).index, palette='viridis')
+    plt.title(title, fontsize=14, pad=15, weight='bold')
+    plt.xlabel("Feature Importance", fontsize=12)
+    plt.ylabel("Features", fontsize=12)
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.show()
 
 def plot_residuals(y_test, y_pred, model_name, filename):
@@ -69,11 +76,17 @@ def plot_residuals(y_test, y_pred, model_name, filename):
     residuals = y_test - y_pred
 
     plt.figure(figsize=(10, 6))
-    sns.histplot(residuals, kde=True, bins=30, label=model_name, alpha=0.6)
-    plt.axhline(0, color='black', linewidth=1)
-    plt.legend()
-    plt.title(f"{model_name} Residual Distribution")
-    plt.savefig(filename)
+    sns.histplot(residuals, kde=True, bins=30, color='teal', alpha=0.6, stat='density')
+    plt.axvline(0, color='red', linestyle='--', linewidth=1.5, label='Zero Line')
+    plt.title(f"{model_name} Residual Distribution", fontsize=14, pad=15, weight='bold')
+    plt.xlabel("Residuals", fontsize=12)
+    plt.ylabel("Density", fontsize=12)
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.legend(fontsize=10)
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.show()
 
 def plot_shap_summary(model, X_test, filename):
@@ -82,8 +95,11 @@ def plot_shap_summary(model, X_test, filename):
     shap_values = explainer(X_test)
     
     plt.figure(figsize=(10, 6))
-    shap.summary_plot(shap_values, X_test, show=False)
-    plt.savefig(filename, bbox_inches='tight')
+    shap.summary_plot(shap_values, X_test, show=False, plot_size=None)
+    plt.title("SHAP Feature Importance", fontsize=14, pad=15, weight='bold')
+    plt.xlabel("SHAP Value (Impact on Model Output)", fontsize=12)
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
 # -------------- Load & Prepare Data ---------------------
