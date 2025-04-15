@@ -10,6 +10,14 @@ from lightgbm import LGBMClassifier, LGBMRegressor
 import shap
 import os
 import numpy as np
+from sklearn.ensemble import IsolationForest
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
 
 def create_directory(path: str):
     if not os.path.exists(path):
@@ -171,4 +179,121 @@ print(f"\nFeature counts:")
 print(f"- Intrusion detection: {len(X.columns)} features")
 print(f"- Session duration prediction: {len(X_new.columns)} features")
 
+
+#-----------------------------Unsupervised Algorithms----------------------
+# ---------------- Isolation Forest for Anomaly Detection -----------------
+
+# Train only on **normal** data 
+X_train_normal = X_train[y_train == 0]
+
+# Tune contamination based on actual attack ratio
+contamination_rate = (y_train == 1).sum() / len(y_train)
+
+iso_forest = IsolationForest(
+    contamination=contamination_rate,  # Approx % of anomalies
+    random_state=42,
+    n_estimators=100,
+    max_samples='auto'
+)
+
+# Fit model on normal samples
+iso_forest.fit(X_train_normal)
+
+# Predict on test set
+# -1 = anomaly, 1 = normal
+anomaly_preds = iso_forest.predict(X_test)
+
+# Map predictions to match `attack_detected` (1=attack, 0=normal)
+mapped_preds = np.where(anomaly_preds == -1, 1, 0)
+
+# Evaluate 
+evaluate_model(y_test, mapped_preds, "Isolation Forest", 'classification')
+
+# Optional: Anomaly Score Distribution
+scores = iso_forest.decision_function(X_test)
+plt.figure(figsize=(10, 5))
+sns.histplot(scores, bins=50, kde=True)
+plt.title("Isolation Forest Anomaly Scores")
+plt.xlabel("Anomaly Score")
+plt.ylabel("Frequency")
+plt.savefig("Phase2/Plots/Isolation-Forest/Isolation-Forest-Anomaly-Scores")
+plt.show()
+
+# ---------------- K-Means Clustering ------------------
+# ---------------- Feature Selection ------------------
+selected_features = [
+    'Duration', 'SourcePort', 'DestinationPort', 'PacketCount', 'ByteCount',
+    'network_packet_size', 'login_attempts', 'session_duration',
+    'ip_reputation_score', 'failed_logins', 'unusual_time_access'
+]
+
+X_train_kmeans = X_train[selected_features]
+X_test_kmeans = X_test[selected_features]
+
+# ---------------- Scaling the Data ------------------
+# Standardizing the features before applying KMeans
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train_kmeans)
+X_test_scaled = scaler.transform(X_test_kmeans)
+
+# ---------------- KMeans Clustering ------------------
+kmeans = KMeans(n_clusters=2, random_state=42)
+kmeans.fit(X_train_scaled)
+
+# Predict clusters on the test data
+kmeans_preds = kmeans.predict(X_test_scaled)
+
+# ---------------- Map KMeans clusters to match anomaly labels ------------------
+labels = np.zeros_like(kmeans_preds)
+for i in range(2):
+    mask = (kmeans_preds == i)
+    labels[mask] = np.bincount(mapped_preds[mask]).argmax()  # Adjusting labels as per true class distribution
+
+# ---------------- Evaluation ------------------
+silhouette_avg = silhouette_score(X_test_scaled, kmeans_preds)
+print(f"\nSilhouette Score for K-Means Clustering (Selected Features): {silhouette_avg:.4f}")
+
+# ---------------- Evaluation Function ------------------
+evaluate_model(mapped_preds, labels, "K-Means", 'classification')
+
+# ---------------- Cluster Visualization ------------------
+# Replace cluster labels with descriptive names for visualization
+label_names = np.array(['Normal', 'Anomaly'])
+visual_labels = label_names[labels]
+
+# session_duration vs ByteCount scatter plot
+plt.figure(figsize=(10, 6))
+sns.scatterplot(
+    x=X_test_kmeans['session_duration'],
+    y=X_test_kmeans['ByteCount'],
+    hue=visual_labels,
+    palette="viridis"
+)
+plt.title("K-Means Clustering - session_duration vs ByteCount")
+plt.xlabel("Session Duration")
+plt.ylabel("Byte Count")
+plt.legend(title="Traffic Type")
+plt.tight_layout()
+plt.savefig("Phase2/Plots/K-Means/kmeans_clusters_session_bytecount.png")
+plt.show()
+
+# ---------------- PCA for Cluster Visualization ------------------
+pca = PCA(n_components=2)
+# Using the already scaled test data (X_test_scaled)
+reduced_data = pca.fit_transform(X_test_scaled)
+
+# PCA scatter plot
+plt.figure(figsize=(10, 6))
+plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=kmeans_preds, cmap='viridis')
+plt.title("K-Means Clustering Visualization (PCA)")
+plt.xlabel("Traffic Type Variation Axis")
+plt.ylabel("Attack vs. Normal Variance Axis")
+plt.colorbar(label='Cluster')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+plt.savefig("Phase2/Plots/K-Means/clustering-Visualization-PCA.png")
+
+
 print("\nAnalysis complete!")
+
