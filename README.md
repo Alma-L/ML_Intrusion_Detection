@@ -271,7 +271,97 @@ This heatmap displays the correlation between different numerical features after
 ---
 ## Analysis and Evaluation (Retraining) - Phase II
 
-Phase 2 of the model training focuses on using various machine learning algorithms to predict cybersecurity-related outcomes. We evaluate models: Random Forest, Gradient Boosting, and LightGBM Classifier, on the dataset of network traffic and intrusion detection. The models are trained using the cleaned dataset, and their performance is evaluated using metrics like Mean Absolute Error (MAE), Mean Squared Error (MSE), Root Mean Squared Error (RMSE), and R².
+Phase 2 of the model training focuses on leveraging various machine learning algorithms to predict cybersecurity-related outcomes. This phase evaluates both supervised classification and unsupervised anomaly detection models, including **Random Forest**, **Gradient Boosting**, **LightGBM**, **Isolation Forest**, **K-Means Clustering**, and **DBSCAN**, all trained on a dataset of network traffic and intrusion detection. We assess their performance using metrics such as **Accuracy**, **F1-Score**, **ROC AUC**, and others, depending on the model type. This approach allows for a comprehensive understanding of how each algorithm performs in detecting normal and malicious activities within network traffic data.
+
+
+
+### Supervised Classification Models
+
+#### Random Forest Classifier
+
+The **Random Forest** model was trained using all 18 network traffic features. It was configured with 100 trees, Gini impurity as the split criterion, and a random state of 42 to ensure reproducibility. This algorithm is an ensemble learning method that constructs multiple decision trees during training and outputs the class that is the mode of the classes (classification) or mean prediction (regression) of the individual trees. Due to its ability to reduce overfitting and provide high accuracy even on complex datasets, it is ideal for network intrusion detection scenarios where multiple input variables contribute to classification.
+
+**Performance**:
+
+| Metric   | Score  |
+| -------- | ------ |
+| Accuracy | 97.83% |
+| F1-Score | 97.50% |
+| ROC AUC  | 97.56% |
+
+---
+
+#### Gradient Boosting Classifier
+
+This model used the same features and was fine-tuned with 100 boosting stages, a learning rate of 0.1, early stopping after 10 rounds to avoid overfitting, and class weighting to address imbalanced attack data. Gradient Boosting builds models sequentially and each new model attempts to correct the errors made by the previous one. It is especially effective for imbalanced datasets as it can place more focus on harder-to-classify samples. However, it tends to be more sensitive to parameter tuning and overfitting compared to Random Forest.
+
+**Performance**:
+
+| Metric   | Score  |
+| -------- | ------ |
+| Accuracy | 89.85% |
+| F1-Score | 87.10% |
+| ROC AUC  | 88.57% |
+
+---
+
+
+#### LightGBM Classifier
+
+Optimized for both speed and efficiency, this model used histogram-based learning with a maximum depth of 5, L2 regularization (λ = 0.1), and native categorical feature handling via binning. LightGBM is a gradient boosting framework that uses tree-based learning algorithms. It is known for faster training speed and lower memory usage, making it a strong candidate for real-time or large-scale applications. Its ability to handle categorical variables directly improves both performance and interpretability.
+
+**Performance**:
+
+| Metric   | Score  |
+| -------- | ------ |
+| Accuracy | 92.74% |
+| F1-Score | 91.10% |
+| ROC AUC  | 91.83% |
+
+---
+
+### Unsupervised Anomaly Detection
+
+#### Isolation Forest
+
+Trained only on normal traffic (`y=0`), this model isolates anomalies based on a contamination ratio of 29.6% (matching the real-world attack ratio), 100 trees, and automatic subsampling for scalability. An anomaly threshold was set at -1 to classify outliers. Isolation Forest is a tree-based anomaly detection technique that works by randomly selecting a feature and splitting it. Anomalies are more susceptible to isolation and hence require fewer splits. This model is highly scalable and effective in scenarios where labeled attack data is unavailable or incomplete.
+
+**Performance**:
+
+| Metric   | Score  |
+| -------- | ------ |
+| Accuracy | 54.01% |
+| F1-Score | 49.52% |
+| ROC AUC  | 53.69% |
+
+---
+
+#### K-Means Clustering
+
+Clustering was performed on 11 selected, scaled features. We used 2 clusters (normal vs anomaly), and cluster labels were matched to true labels via majority voting. The Silhouette Score was 0.162, indicating moderate separation. K-Means is a classic unsupervised clustering algorithm that assigns data into k groups by minimizing intra-cluster variance. While basic, it serves as a quick baseline for unsupervised anomaly detection. Its lower performance in this context highlights the complex nature of network traffic data and the benefit of more sophisticated approaches.
+
+**Performance**:
+
+| Metric   | Score  |
+| -------- | ------ |
+| Accuracy | 64.11% |
+| F1-Score | 62.39% |
+| ROC AUC  | 62.22% |
+
+---
+#### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+
+DBSCAN is a density-based clustering algorithm that groups together closely packed points and marks points in low-density regions as outliers. It's particularly useful for detecting clusters of varying shapes and sizes, and is less sensitive to noise. In this analysis, DBSCAN was evaluated for its ability to identify anomalies in network traffic data.
+
+**Performance**:
+
+| Metric   | Value  |
+| -------- | ------ |
+| Accuracy | 0.4552 |
+| F1-Score | 0.6163 |
+| ROC AUC  | 0.5083 |
+
+---
 
 **Figure:Top 10 important features from Random Forest**
 
@@ -308,4 +398,3 @@ Residual plot for Gradient Boosting model showing prediction errors concentrated
  ![LightGBM regressor's critical features for predicting session lengths.](Phase2/Plots/lgb_feature_importance_session_duration.png)
 
 LightGBM regressor's critical features for predicting session lengths. Shows network metrics like throughput or latency that correlate with longer/shorter sessions.
-
