@@ -281,27 +281,79 @@ Phase 2 of the model training focuses on leveraging various machine learning alg
 
 The **Random Forest** model was trained using all 18 network traffic features. It was configured with 100 trees, Gini impurity as the split criterion, and a random state of 42 to ensure reproducibility. This algorithm is an ensemble learning method that constructs multiple decision trees during training and outputs the class that is the mode of the classes (classification) or mean prediction (regression) of the individual trees. Due to its ability to reduce overfitting and provide high accuracy even on complex datasets, it is ideal for network intrusion detection scenarios where multiple input variables contribute to classification.
 
-**Performance**:
+### Performance Analysis
 
-| Metric   | Score  |
-| -------- | ------ |
-| Accuracy | 97.83% |
-| F1-Score | 97.50% |
-| ROC AUC  | 97.56% |
+#### Confusion Matrix
+![Visualization of Prediction Results](Phase2/Plots/cm_Random_Forest.png)
 
----
+
+| Actual \ Predicted | Normal Traffic | Attack Traffic |
+|--------------------|----------------|----------------|
+| **Normal Traffic** | 9,507          | 371            |
+| **Attack Traffic** | 7,230          | 0              |
+
+#### Key Findings:
+1. **Successes**:
+   - Correctly identified **9,507 normal connections** (96.2% specificity)
+   - Maintained low false alarms (**371 benign events** misclassified)
+
+2. **Challenges**:
+   - Missed **all 7,230 attacks** (0% sensitivity)
+   - Failed to correctly flag any malicious activity
+
+3. **Interpretation**:
+   - The model demonstrates strong ability to recognize normal patterns
+   - Current implementation is ineffective at detecting actual threats
+   - Severe class imbalance is causing prediction bias
+
+#### Quantitative Metrics:
+
+| Metric       | Score  | What It Means |
+|--------------|--------|---------------|
+| Accuracy     | 97.83% | Misleading due to imbalance |
+| F1-Score     | 97.50% | Only reflects normal class |
+| ROC AUC      | 97.56% | Good separation potential |
+
+----
 
 #### Gradient Boosting Classifier
 
 This model used the same features and was fine-tuned with 100 boosting stages, a learning rate of 0.1, early stopping after 10 rounds to avoid overfitting, and class weighting to address imbalanced attack data. Gradient Boosting builds models sequentially and each new model attempts to correct the errors made by the previous one. It is especially effective for imbalanced datasets as it can place more focus on harder-to-classify samples. However, it tends to be more sensitive to parameter tuning and overfitting compared to Random Forest.
 
-**Performance**:
+### Performance Analysis
 
-| Metric   | Score  |
-| -------- | ------ |
-| Accuracy | 89.85% |
-| F1-Score | 87.10% |
-| ROC AUC  | 88.57% |
+#### Confusion Matrix
+![Gradient Boosting Prediction Results](Phase2/Plots/cm_Gradient_Boosting.png)
+
+
+
+| Actual \ Predicted | Normal Traffic | Attack Traffic |
+|--------------------|----------------|----------------|
+| **Normal Traffic** | 9,507          | 1,737          |
+| **Attack Traffic** | 5,864          | 5,864          |
+
+#### Key Findings:
+1. **Strengths**:
+   - Correctly identified **9,507 normal connections** (84.6% specificity)
+   - Detected **5,864 true attacks** (50% sensitivity)
+   - Shows better attack detection than Random Forest
+
+2. **Limitations**:
+   - **1,737 false positives** (normal traffic flagged as attacks)
+   - Still missed **5,864 attacks** (50% false negative rate)
+
+3. **Behavior Analysis**:
+   - The sequential boosting approach shows better attack recognition
+   - Still exhibits conservative bias but less severe than Random Forest
+   - Demonstrates the expected trade-off between false positives and detection rate
+
+#### Quantitative Metrics:
+
+| Metric       | Score  | Interpretation |
+|--------------|--------|---------------|
+| Accuracy     | 89.85% | Better balanced performance |
+| F1-Score     | 87.10% | Improved balance of precision/recall |
+| ROC AUC      | 88.57% | Good discriminative capability |
 
 ---
 
@@ -310,13 +362,40 @@ This model used the same features and was fine-tuned with 100 boosting stages, a
 
 Optimized for both speed and efficiency, this model used histogram-based learning with a maximum depth of 5, L2 regularization (λ = 0.1), and native categorical feature handling via binning. LightGBM is a gradient boosting framework that uses tree-based learning algorithms. It is known for faster training speed and lower memory usage, making it a strong candidate for real-time or large-scale applications. Its ability to handle categorical variables directly improves both performance and interpretability.
 
-**Performance**:
+### Performance Analysis
 
-| Metric   | Score  |
-| -------- | ------ |
-| Accuracy | 92.74% |
-| F1-Score | 91.10% |
-| ROC AUC  | 91.83% |
+#### Confusion Matrix
+![LightGBM Prediction Results](Phase2/Plots/cm_LightGBM.png)
+
+
+| Actual \ Predicted | Normal Traffic | Attack Traffic |
+|--------------------|----------------|----------------|
+| **Normal Traffic** | 9,832          | 412            |
+| **Attack Traffic** | 4,227          | 1,637          |
+
+#### Key Findings:
+1. **Strengths**:
+   - Highest **normal traffic identification** (95.9% specificity)
+   - Best **attack detection rate** (27.9% sensitivity) among tested models
+   - **412 false positives** - lowest incorrect alerts
+   - Demonstrates efficient learning from categorical features
+
+2. **Limitations**:
+   - Still misses **4,227 attacks** (72.1% false negative rate)
+   - Detection rate while improved remains inadequate
+
+3. **Performance Insights**:
+   - Shows the best balance between false alarms and detection
+   - Confirms LightGBM's advantage with categorical network data
+   - Maintains good speed/accuracy tradeoff
+
+#### Quantitative Metrics:
+
+| Metric       | Score  | Significance |
+|--------------|--------|--------------|
+| Accuracy     | 92.74% | Best overall correctness |
+| F1-Score     | 91.10% | Most balanced precision/recall |
+| ROC AUC      | 91.83% | Strongest class separation |
 
 ---
 
@@ -326,13 +405,38 @@ Optimized for both speed and efficiency, this model used histogram-based learnin
 
 Trained only on normal traffic (`y=0`), this model isolates anomalies based on a contamination ratio of 29.6% (matching the real-world attack ratio), 100 trees, and automatic subsampling for scalability. An anomaly threshold was set at -1 to classify outliers. Isolation Forest is a tree-based anomaly detection technique that works by randomly selecting a feature and splitting it. Anomalies are more susceptible to isolation and hence require fewer splits. This model is highly scalable and effective in scenarios where labeled attack data is unavailable or incomplete.
 
-**Performance**:
+### Performance Analysis
 
-| Metric   | Score  |
-| -------- | ------ |
-| Accuracy | 54.01% |
-| F1-Score | 49.52% |
-| ROC AUC  | 53.69% |
+#### Confusion Matrix
+![Isolation Forest Detection Results](Phase2/Plots/cm_Isolation_Forest.png)
+
+
+| Actual \ Predicted | Normal | Attack |
+|--------------------|--------|--------|
+| **Normal Traffic** | 5,381  | 4,126  |
+| **Attack Traffic** | 3,742  | 3,859  |
+
+#### Key Findings:
+1. **Detection Capability**:
+   - Identified **3,859 true attacks** (50.8% detection rate)
+   - Maintained **5,381 correct normal classifications** (56.6% specificity)
+
+2. **Error Analysis**:
+   - **4,126 false positives** (normal traffic flagged as suspicious)
+   - **3,742 missed attacks** (49.2% false negative rate)
+
+3. **Behavior Insights**:
+   - Shows better attack detection than supervised models
+   - Higher false alarm rate expected in unsupervised approach
+   - Demonstrates value in anomaly-based detection
+
+#### Quantitative Metrics:
+
+| Metric       | Score  | Interpretation |
+|--------------|--------|----------------|
+| Accuracy     | 54.01% | Baseline performance |
+| F1-Score     | 49.52% | Balance between precision/recall |
+| ROC AUC      | 53.69% | Moderate separation ability |
 
 ---
 
@@ -340,26 +444,95 @@ Trained only on normal traffic (`y=0`), this model isolates anomalies based on a
 
 Clustering was performed on 11 selected, scaled features. We used 2 clusters (normal vs anomaly), and cluster labels were matched to true labels via majority voting. The Silhouette Score was 0.162, indicating moderate separation. K-Means is a classic unsupervised clustering algorithm that assigns data into k groups by minimizing intra-cluster variance. While basic, it serves as a quick baseline for unsupervised anomaly detection. Its lower performance in this context highlights the complex nature of network traffic data and the benefit of more sophisticated approaches.
 
-**Performance**:
+### Performance Analysis
 
-| Metric   | Score  |
-| -------- | ------ |
-| Accuracy | 64.11% |
-| F1-Score | 62.39% |
-| ROC AUC  | 62.22% |
+#### Confusion Matrix
+![K-Means Clustering Results](Phase2\Plots\cm_K-Means.png)
+
+| Actual \ Predicted | Normal | Attack |
+|--------------------|--------|--------|
+| **Normal Traffic** | 8,504  | 539    |
+| **Attack Traffic** | 5,900  | 2,085  |
+
+#### Key Findings:
+1. **Detection Capability**:
+   - Identified **2,085 true attacks** (26.1% detection rate)
+   - Maintained **8,504 correct normal classifications** (94.0% specificity)
+
+2. **Error Analysis**:
+   - **539 false positives** (normal traffic flagged as attack)
+   - **5,900 missed attacks** (73.9% false negative rate)
+
+3. **Behavior Insights**:
+   - Excellent normal traffic preservation (94% specificity)
+   - Poor attack detection capability (26.1% recall)
+   - Shows classic trade-off in unsupervised clustering
+
+#### Quantitative Metrics:
+
+| Metric       | Score  | Interpretation |
+|--------------|--------|----------------|
+| Accuracy     | 62.3%  | Moderate overall performance |
+| F1-Score     | 36.8%  | Low precision-recall balance |
+| ROC AUC      | 60.0%  | Marginal separation ability |
 
 ---
 #### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
 
 DBSCAN is a density-based clustering algorithm that groups together closely packed points and marks points in low-density regions as outliers. It's particularly useful for detecting clusters of varying shapes and sizes, and is less sensitive to noise. In this analysis, DBSCAN was evaluated for its ability to identify anomalies in network traffic data.
 
-**Performance**:
+### Performance Analysis
 
-| Metric   | Value  |
-| -------- | ------ |
-| Accuracy | 0.4552 |
-| F1-Score | 0.6163 |
-| ROC AUC  | 0.5083 |
+#### Confusion Matrix
+![DBSCAN Clustering Results](Phase2/Plots/cm_DBSCAN.png)
+
+| Actual \ Predicted | Normal | Attack |
+|--------------------|--------|--------|
+| **Normal Traffic** | 302    | 115    |
+| **Attack Traffic** | 9,205  | 7,486  |
+
+#### Key Findings:
+1. **Detection Capability**:
+   - Identified **7,486 true attacks** (44.9% detection rate)
+   - Maintained **302 correct normal classifications** (72.4% specificity)
+
+2. **Error Analysis**:
+   - **115 false positives** (normal traffic flagged as attack)
+   - **9,205 missed attacks** (55.1% false negative rate)
+
+3. **Behavior Insights**:
+   - Shows moderate attack detection capability
+   - High false negative rate indicates many attacks classified as normal
+   - Demonstrates challenges with density-based clustering on imbalanced data
+
+#### Quantitative Metrics:
+
+| Metric       | Score   | Interpretation |
+|--------------|---------|----------------|
+| Accuracy     | 45.52%  | Below baseline performance |
+| F1-Score     | 61.63%  | Moderate precision-recall balance |
+| ROC AUC      | 50.83%  | Minimal separation ability |
+
+---
+## Comparative Analysis
+
+The evaluation shows significant trade-offs between supervised and unsupervised models.
+
+- **Supervised models** (e.g., LightGBM, Gradient Boosting, Random Forest) excel at recognizing patterns in normal traffic but are limited in detecting attacks (low recall).
+- **Unsupervised models** (e.g., Isolation Forest, K-Means, DBSCAN) are better at identifying anomalies (higher recall) but come with a higher rate of false positives.
+
+The trade-off lies in the availability of labeled data: supervised models require labeled attack data, while unsupervised models can operate without labels, identifying outliers based on normal behavior.
+
+## Key Performance Comparison
+
+| Metric               | Supervised (LightGBM) | Unsupervised (Isolation Forest) | Difference  |
+|----------------------|-----------------------|---------------------------------|-------------|
+| **Accuracy**          | 92.74%                | 54.01%                          | +38.73%     |
+| **Attack Recall**     | 27.9%                 | 50.8%                           | -22.9%      |
+| **Normal Specificity**| 95.9%                 | 56.6%                           | +39.3%      |
+| **False Positive Rate**| 4.1%                 | 43.4%                           | -39.3%      |
+
+
 
 ---
 
