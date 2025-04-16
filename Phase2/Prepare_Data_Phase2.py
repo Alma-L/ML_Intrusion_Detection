@@ -17,7 +17,10 @@ from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import RobustScaler
+from sklearn.neighbors import NearestNeighbors
+from collections import Counter
 
 def create_directory(path: str):
     if not os.path.exists(path):
@@ -295,5 +298,63 @@ plt.show()
 plt.savefig("Phase2/Plots/K-Means/clustering-Visualization-PCA.png")
 
 
-print("\nAnalysis complete!")
+# ---------------- DBSCAN Clustering ------------------
+dbscan_features = [
+    'ip_reputation_score',  
+    'failed_logins',        
+    'network_packet_size',  
+    'session_duration',     
+    'ByteCount',            
+    'unusual_time_access'   
+]
 
+X_dbscan = X_test[dbscan_features].copy()
+
+# Robust scaling for better outlier handling
+scaler_db = RobustScaler()
+X_dbscan_scaled = scaler_db.fit_transform(X_dbscan)
+
+# ----- Parameter Optimization using Knee Method -----
+neighbors = NearestNeighbors(n_neighbors=4)
+neighbors_fit = neighbors.fit(X_dbscan_scaled)
+distances, indices = neighbors_fit.kneighbors(X_dbscan_scaled)
+
+# Sort and plot k-distance graph
+distances = np.sort(distances[:, 3], axis=0)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(distances)
+ax.set_title('K-Distance Graph for Epsilon Selection')
+ax.set_xlabel('Data Points')
+ax.set_ylabel('4th Nearest Neighbor Distance')
+plt.tight_layout()
+plt.savefig("Phase2/Plots/DBSCAN/k_distance_graph.png")
+plt.close(fig)  
+
+# Set parameters - adjust these based on your k-distance graph
+optimal_eps = 0.85  # Look for the "elbow" in your k-distance plot
+min_samples = 2 * X_dbscan.shape[1]  # Common rule: 2 * num_features
+
+# Initialize and fit DBSCAN
+dbscan = DBSCAN(eps=optimal_eps, min_samples=min_samples)
+dbscan_labels = dbscan.fit_predict(X_dbscan_scaled)
+
+# Verify cluster distribution
+print("\nDBSCAN cluster distribution:")
+print(pd.Series(dbscan_labels).value_counts())
+
+# Improved cluster mapping - verify with true labels
+cluster_stats = pd.DataFrame({
+    'cluster': dbscan_labels,
+    'true_label': y_test.values
+}).groupby('cluster')['true_label'].value_counts(normalize=True)
+
+print("\nCluster-to-label mapping statistics:")
+print(cluster_stats)
+
+# Smart label mapping based on true label distribution
+normal_cluster = cluster_stats.loc[:, 0].idxmax()  # Cluster with most normal samples
+mapped_dbscan_labels = np.where(dbscan_labels == normal_cluster, 0, 1)
+
+# Evaluate against y_test
+evaluate_model(y_test, mapped_dbscan_labels, "DBSCAN", problem_type='classification')
