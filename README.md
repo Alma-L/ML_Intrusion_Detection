@@ -447,7 +447,7 @@ Clustering was performed on 11 selected, scaled features. We used 2 clusters (no
 ### Performance Analysis
 
 #### Confusion Matrix
-![K-Means Clustering Results](Phase2\Plots\cm_K-Means.png)
+![K-Means Clustering Results](Phase2/Plots/cm_K-Means.png)
 
 | Actual \ Predicted | Normal | Attack |
 |--------------------|--------|--------|
@@ -514,7 +514,7 @@ DBSCAN is a density-based clustering algorithm that groups together closely pack
 | ROC AUC      | 50.83%  | Minimal separation ability |
 
 ---
-## Comparative Analysis
+## Key Findings
 
 The evaluation shows significant trade-offs between supervised and unsupervised models.
 
@@ -532,11 +532,14 @@ The trade-off lies in the availability of labeled data: supervised models requir
 | **Normal Specificity**| 95.9%                 | 56.6%                           | +39.3%      |
 | **False Positive Rate**| 4.1%                 | 43.4%                           | -39.3%      |
 
+---
+### Conclusion
 
+The results highlight the importance of choosing the right model based on the dataset's characteristics and the availability of labeled data. Supervised models like LightGBM perform well with labeled data but struggle with attack detection. Unsupervised models such as Isolation Forest, while better at anomaly detection, face challenges in managing false positives. Future improvements might involve combining both approaches or exploring hybrid models.
 
 ---
 
-**Figure:Top 10 important features from Random Forest**
+**Figure: Top 10 important features from Random Forest**
 
  ![Top 10 important features from Random Forest](Phase2/Plots/feature_importance_rf.png)
 
