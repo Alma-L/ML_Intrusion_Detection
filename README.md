@@ -277,14 +277,14 @@ Phase 2 of the model training focuses on leveraging various machine learning alg
 
 ### Supervised Classification Models
 
-#### Random Forest Classifier
+### Random Forest Classifier
 
 The **Random Forest** model was trained using all 18 network traffic features. It was configured with 100 trees, Gini impurity as the split criterion, and a random state of 42 to ensure reproducibility. This algorithm is an ensemble learning method that constructs multiple decision trees during training and outputs the class that is the mode of the classes (classification) or mean prediction (regression) of the individual trees. Due to its ability to reduce overfitting and provide high accuracy even on complex datasets, it is ideal for network intrusion detection scenarios where multiple input variables contribute to classification.
 
-### Performance Analysis
+#### Performance Analysis
 
 #### Confusion Matrix
-![Visualization of Prediction Results](Phase2\Plots\Classification\RandomForest\cm_Random_Forest.png)
+![Visualization of Prediction Results](Phase2/Plots/Classification/RandomForest/cm_Random_Forest.png)
 
 
 | Actual \ Predicted | Normal Traffic | Attack Traffic |
@@ -314,32 +314,32 @@ The **Random Forest** model was trained using all 18 network traffic features. I
 | F1-Score     | 97.50% | Only reflects normal class |
 | ROC AUC      | 97.56% | Good separation potential |
 
-### Intrusion Detection (Classification)
-![Random Forest Classification Feature Importance](Phase2\Plots\Classification\RandomForest\feature_importance_rf.png)
+#### Intrusion Detection (Classification)
+![Random Forest Classification Feature Importance](Phase2/Plots/Classification/RandomForest/feature_importance_rf.png)
 
 The classification model shows strong focus on security events, with `failed_logins` (28%), `login_attempts` (22%), and `ip_reputation_score` (19%) being the top predictors. This concentration on authentication patterns explains the model's high accuracy (97.8%) on normal traffic but complete failure (0%) to detect attacks, revealing critical overfitting to the majority class. Protocol and browser features showed negligible impact (<3%), suggesting they can be deprioritized in future iterations. The model would benefit from adversarial training techniques to improve attack recognition.
 
-### Session Duration Prediction (Regression)
-![Random Forest Regression Feature Importance](Phase2\Plots\Regression\RandomForest\feature_importance_rf.png)
+#### Session Duration Prediction (Regression)
+![Random Forest Regression Feature Importance](Phase2/Plots/Regression/RandomForest/feature_importance_rf.png)
 
 For duration prediction, network quality indicators dominate - `ip_reputation_score` (35%) and `network_packet_size` (25%) collectively explain 60% of feature importance. The moderate R² score (0.23) indicates significant unexplained variance, likely requiring additional network latency metrics or temporal features. Unlike the classification model, authentication events (`login_attempts`: 15%) play a secondary role here, highlighting how feature importance varies dramatically between prediction tasks.
 
   **Figure: Error distribution (actual vs predicted values) for Random Forest predictions**
 
- ![Error distribution (actual vs predicted values) for Random Forest predictions](Phase2\Plots\Regression\RandomForest\residual_rf.png)
+ ![Error distribution (actual vs predicted values) for Random Forest predictions](Phase2/Plots/Regression/RandomForest/residual_rf.png)
 
  Error distribution (actual vs predicted values) for Random Forest predictions. Helps identify if the model systematically over/underestimates attack probabilities.
 
 ----
 
-#### Gradient Boosting Classifier
+### Gradient Boosting Classifier
 
 This model used the same features and was fine-tuned with 100 boosting stages, a learning rate of 0.1, early stopping after 10 rounds to avoid overfitting, and class weighting to address imbalanced attack data. Gradient Boosting builds models sequentially and each new model attempts to correct the errors made by the previous one. It is especially effective for imbalanced datasets as it can place more focus on harder-to-classify samples. However, it tends to be more sensitive to parameter tuning and overfitting compared to Random Forest.
 
-### Performance Analysis
+#### Performance Analysis
 
 #### Confusion Matrix
-![Gradient Boosting Prediction Results](Phase2\Plots\Classification\GradientBoosting\cm_Gradient_Boosting.png)
+![Gradient Boosting Prediction Results](Phase2/Plots/Classification/GradientBoosting/cm_Gradient_Boosting.png)
 
 
 
@@ -371,34 +371,34 @@ This model used the same features and was fine-tuned with 100 boosting stages, a
 | F1-Score     | 87.10% | Improved balance of precision/recall |
 | ROC AUC      | 88.57% | Good discriminative capability |
 
-### Intrusion Detection (Classification)
-![Gradient Boosting Classification Feature Importance](Phase2\Plots\Classification\GradientBoosting\feature_importance_gb.png)
+#### Intrusion Detection (Classification)
+![Gradient Boosting Classification Feature Importance](Phase2/Plots/Classification/GradientBoosting/feature_importance_gb.png)
 
 The classification model highlights `failed_logins` (40%) as the most critical predictor, followed by `login_attempts` (35%) and `ip_reputation_score` (25%), demonstrating a strong security-focused pattern. Browser and protocol features show minimal influence (<10% combined), suggesting these can potentially be removed to simplify the model without significant performance impact. This feature weighting aligns with the model's 89.9% accuracy but also reveals its vulnerability to imbalanced attack patterns, where security events dominate the decision process.
 
-### Session Duration Prediction (Regression) 
-![Gradient Boosting Regression Feature Importance](Phase2\Plots\Regression\GradientBoosting\feature_importance_gb.png)
+#### Session Duration Prediction (Regression) 
+![Gradient Boosting Regression Feature Importance](Phase2/Plots/Regression/GradientBoosting/feature_importance_gb.png)
 
 For regression tasks, network characteristics dominate - `ip_reputation_score` (40%) and `network_packet_size` (30%) account for 70% of predictive power. Authentication features (`login_attempts`: 15%, `failed_logins`: 10%) play a secondary role, contrasting with their dominance in classification. The limited importance of protocol and browser features (<5% each) suggests the model primarily relies on network quality indicators to predict session duration, though the moderate R² (0.23) indicates room for improvement with additional network performance metrics.
 
 
   **Figure: Residual plot for Gradient Boosting**
 
- ![Residual plot for Gradient Boosting](Phase2\Plots\Regression\GradientBoosting\residual_gb.png)
+ ![Residual plot for Gradient Boosting](Phase2/Plots/Regression/GradientBoosting/residual_gb.png)
 
 Residual plot for Gradient Boosting model showing prediction errors concentrated around zero indicates good performance in classifying network intrusions.
 
 ---
 
 
-#### LightGBM Classifier
+### LightGBM Classifier
 
 Optimized for both speed and efficiency, this model used histogram-based learning with a maximum depth of 5, L2 regularization (λ = 0.1), and native categorical feature handling via binning. LightGBM is a gradient boosting framework that uses tree-based learning algorithms. It is known for faster training speed and lower memory usage, making it a strong candidate for real-time or large-scale applications. Its ability to handle categorical variables directly improves both performance and interpretability.
 
-### Performance Analysis
+#### Performance Analysis
 
 #### Confusion Matrix
-![LightGBM Prediction Results](Phase2\Plots\Classification\LightGBM\cm_LightGBM.png)
+![LightGBM Prediction Results](Phase2/Plots/Classification/LightGBM/cm_LightGBM.png)
 
 
 | Actual \ Predicted | Normal Traffic | Attack Traffic |
@@ -430,42 +430,40 @@ Optimized for both speed and efficiency, this model used histogram-based learnin
 | F1-Score     | 91.10% | Most balanced precision/recall |
 | ROC AUC      | 91.83% | Strongest class separation |
 
-### Intrusion Detection (Classification)
-![LightGBM Classification Feature Importance](Phase2\Plots\Classification\LightGBM\feature_importance_lgb.png)
+#### Intrusion Detection (Classification)
+![LightGBM Classification Feature Importance](Phase2/Plots/Classification/LightGBM/feature_importance_lgb.png)
 
 The LightGBM classifier shows exceptional focus on security metrics, with `ip_reputation_score` (700 importance value) being the dominant predictor, followed by `session_duration` (600) and `network_packet_size` (500). This represents a 3:2:1.5 ratio among the top three features, indicating a more balanced feature weighting compared to other models. Authentication features (`login_attempts`: 400, `failed_logins`: 300) remain important but less dominant, suggesting the model may generalize better across different attack types. Browser and protocol features show minimal impact (<100), making them candidates for removal in production deployments.
 
-### Session Duration Prediction (Regression)
-![LightGBM Regression Feature Importance](Phase2\Plots\Regression\LightGBM\lgb_feature_importance_session_duration.png)
+#### Session Duration Prediction (Regression)
+![LightGBM Regression Feature Importance](Phase2/Plots/Regression/LightGBM/lgb_feature_importance_session_duration.png)
 
 For session duration prediction, network characteristics show different prioritization - `network_packet_size` emerges as the strongest predictor, followed closely by `ip_reputation_score`. The 1:0.8 ratio between these top features suggests more distributed feature importance compared to the classification task. Authentication features maintain moderate influence (`login_attempts`, `failed_logins`), while encryption and protocol features show slightly increased relevance versus the classification model. This pattern aligns with LightGBM's known efficiency with continuous variables in regression tasks.
 
-## SHAP Analysis
+#### SHAP Analysis
 
-### Classification Task (Intrusion Detection)
-![LightGBM Classification SHAP](Phase2\Plots\Classification\LightGBM\shap_summary_lgb.png)
-
-**Interpretation**:  
+#### Classification Task (Intrusion Detection)
+![LightGBM Classification SHAP](Phase2/Plots/Classification/LightGBM/shap_summary_lgb.png)
+ 
 Security features dominate with `ip_reputation_score` (right-red) showing strongest attack correlation (SHAP +4 to +6). Authentication metrics (`failed_logins`, `login_attempts`) and `network_packet_size` provide secondary signals, while protocol/browser features cluster near zero (minimal impact). High `ip_reputation_score` values (left-blue) strongly predict normal traffic.
 
-### Regression Task (Session Duration)
-![LightGBM Regression SHAP](Phase2\Plots\Regression\LightGBM\shap_summary_session_duration.png) 
+#### Regression Task (Session Duration)
+![LightGBM Regression SHAP](Phase2/Plots/Regression/LightGBM/shap_summary_session_duration.png) 
 
-**Interpretation**:  
 `network_packet_size` (right-red) and `ip_reputation_score` show strongest positive correlation with longer sessions. `failed_logins` (left-blue) negatively impacts duration. Protocol types and browser characteristics demonstrate near-zero influence, suggesting session length depends primarily on network quality and security factors.
 
 ---
 
 ### Unsupervised Anomaly Detection
 
-#### Isolation Forest
+### Isolation Forest
 
 Trained only on normal traffic (`y=0`), this model isolates anomalies based on a contamination ratio of 29.6% (matching the real-world attack ratio), 100 trees, and automatic subsampling for scalability. An anomaly threshold was set at -1 to classify outliers. Isolation Forest is a tree-based anomaly detection technique that works by randomly selecting a feature and splitting it. Anomalies are more susceptible to isolation and hence require fewer splits. This model is highly scalable and effective in scenarios where labeled attack data is unavailable or incomplete.
 
-### Performance Analysis
+#### Performance Analysis
 
 #### Confusion Matrix
-![Isolation Forest Detection Results](Phase2\Plots\Classification\IsolationForest\cm_Isolation_Forest.png)
+![Isolation Forest Detection Results](Phase2/Plots/Classification/IsolationForest/cm_Isolation_Forest.png)
 
 
 | Actual \ Predicted | Normal | Attack |
@@ -495,21 +493,22 @@ Trained only on normal traffic (`y=0`), this model isolates anomalies based on a
 | F1-Score     | 49.52% | Balance between precision/recall |
 | ROC AUC      | 53.69% | Moderate separation ability |
 
-## Isolation Forest Anomaly Detection
+#### Isolation Forest Anomaly Detection
 
-![Isolation Forest Anomaly Scores](pPhase2\Plots\Isolation-Forest\Isolation-Forest-Anomaly-Scores.png)
+![Isolation Forest Anomaly Scores](Phase2/Plots/Isolation-Forest/Isolation-Forest-Anomaly-Scores.png)
 
 The anomaly score distribution shows most samples clustered near zero (normal traffic), with clear outliers below -0.05 (potential attacks) and above 0.05 (suspicious activity). The bimodal distribution confirms effective separation between normal and anomalous patterns.
+
 ---
 
-#### K-Means Clustering
+### K-Means Clustering
 
 Clustering was performed on 11 selected, scaled features. We used 2 clusters (normal vs anomaly), and cluster labels were matched to true labels via majority voting. The Silhouette Score was 0.162, indicating moderate separation. K-Means is a classic unsupervised clustering algorithm that assigns data into k groups by minimizing intra-cluster variance. While basic, it serves as a quick baseline for unsupervised anomaly detection. Its lower performance in this context highlights the complex nature of network traffic data and the benefit of more sophisticated approaches.
 
-### Performance Analysis
+#### Performance Analysis
 
 #### Confusion Matrix
-![K-Means Clustering Results](Phase2\Plots\Classification\K-Means\cm_K-Means.png)
+![K-Means Clustering Results](Phase2/Plots/Classification/K-Means/cm_K-Means.png)
 
 | Actual \ Predicted | Normal | Attack |
 |--------------------|--------|--------|
@@ -538,21 +537,21 @@ Clustering was performed on 11 selected, scaled features. We used 2 clusters (no
 | F1-Score     | 36.8%  | Low precision-recall balance |
 | ROC AUC      | 60.0%  | Marginal separation ability |
 
-## K-Means Clustering Visualization
+#### K-Means Clustering Visualization
 
-![Session Duration vs Byte Count Clusters](Phase2\Plots\K-Means\kmeans_clusters_session_bytecount.png)
+![Session Duration vs Byte Count Clusters](Phase2/Plots/K-Means/kmeans_clusters_session_bytecount.png)
 
-The K-Means clustering reveals two distinct traffic patterns: normal sessions (blue) typically show moderate byte counts (5-25) and durations (10-30), while anomalies (orange) exhibit extreme values in either byte volume (>35) or unusually long/short session durations.
+The K-Means clustering reveals two distinct traffic patterns: normal sessions (blue) typically show moderate byte counts (8000-16000) and durations (10-30), while anomalies (green) exhibit extreme values in either byte volume (>4000) or unusually long/short session durations.
 
 ---
-#### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
 
 DBSCAN is a density-based clustering algorithm that groups together closely packed points and marks points in low-density regions as outliers. It's particularly useful for detecting clusters of varying shapes and sizes, and is less sensitive to noise. In this analysis, DBSCAN was evaluated for its ability to identify anomalies in network traffic data.
 
-### Performance Analysis
+#### Performance Analysis
 
 #### Confusion Matrix
-![DBSCAN Clustering Results](Phase2\Plots\Classification\DBSCAN\cm_DBSCAN.png)
+![DBSCAN Clustering Results](Phase2/Plots/Classification/DBSCAN/cm_DBSCAN.png)
 
 | Actual \ Predicted | Normal | Attack |
 |--------------------|--------|--------|
@@ -586,8 +585,8 @@ DBSCAN is a density-based clustering algorithm that groups together closely pack
 
 The evaluation shows significant trade-offs between supervised and unsupervised models.
 
-- **Supervised models** (e.g., LightGBM, Gradient Boosting, Random Forest) excel at recognizing patterns in normal traffic but are limited in detecting attacks (low recall).
-- **Unsupervised models** (e.g., Isolation Forest, K-Means, DBSCAN) are better at identifying anomalies (higher recall) but come with a higher rate of false positives.
+- **Supervised models** (Random Forest, Gradient Boosting, LightGBM) excel at recognizing patterns in normal traffic but are limited in detecting attacks (low recall).
+- **Unsupervised models** (Isolation Forest, K-Means, DBSCAN) are better at identifying anomalies (higher recall) but come with a higher rate of false positives.
 
 The trade-off lies in the availability of labeled data: supervised models require labeled attack data, while unsupervised models can operate without labels, identifying outliers based on normal behavior.
 
