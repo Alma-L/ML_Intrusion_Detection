@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier  # Changed to classifiers
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, RandomForestRegressor , GradientBoostingRegressor
 from sklearn.metrics import (accuracy_score, f1_score, roc_auc_score,
                              mean_absolute_error, mean_squared_error, r2_score,
                              confusion_matrix, ConfusionMatrixDisplay)
@@ -11,16 +11,15 @@ import shap
 import os
 import numpy as np
 from sklearn.ensemble import IsolationForest
-from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import RobustScaler
 from sklearn.neighbors import NearestNeighbors
-from collections import Counter
+
 
 def create_directory(path: str):
     if not os.path.exists(path):
@@ -47,8 +46,10 @@ def evaluate_model(y_true, y_pred, model_name, problem_type='classification'):
         disp = ConfusionMatrixDisplay(confusion_matrix=cm)
         disp.plot()
         plt.title(f"{model_name} Confusion Matrix")
-        plt.savefig(f"Phase2/Plots/cm_{model_name.replace(' ', '_')}.png")
-        plt.show()
+        model_dir = f"Phase2/Plots/Classification/{model_name.replace(' ', '')}"    
+        create_directory(model_dir)
+        plt.savefig(os.path.join(model_dir, f"cm_{model_name.replace(' ', '_')}.png"))
+
         
     else:  # Regression
         mae = mean_absolute_error(y_true, y_pred)
@@ -83,7 +84,6 @@ def plot_feature_importance(model, feature_names, title, filename):
     plt.show()
 
 def plot_residuals(y_test, y_pred, model_name, filename):
-    """Plot residual distribution (for regression only)."""
     residuals = y_test - y_pred
 
     plt.figure(figsize=(10, 6))
@@ -145,14 +145,21 @@ evaluate_model(y_test, gb_model.predict(X_test), "Gradient Boosting", 'classific
 evaluate_model(y_test, lgb_model.predict(X_test), "LightGBM", 'classification')
 
 # Feature Importance Visualization
-plot_feature_importance(rf_model, X.columns, "Random Forest Feature Importance", "Phase2/Plots/feature_importance_rf.png")
-plot_feature_importance(gb_model, X.columns, "Gradient Boosting Feature Importance", "Phase2/Plots/feature_importance_gb.png")
-plot_feature_importance(lgb_model, X.columns, "LightGBM Feature Importance", "Phase2/Plots/feature_importance_lgb.png")
+plot_feature_importance(rf_model, X.columns, "Random Forest Feature Importance",
+                        "Phase2/Plots/Classification/RandomForest/feature_importance_rf.png")
+
+plot_feature_importance(gb_model, X.columns, "Gradient Boosting Feature Importance",
+                        "Phase2/Plots/Classification/GradientBoosting/feature_importance_gb.png")
+
+plot_feature_importance(lgb_model, X.columns, "LightGBM Feature Importance",
+                        "Phase2/Plots/Classification/LightGBM/feature_importance_lgb.png")
+
 
 # SHAP Analysis for best classifier
-plot_shap_summary(lgb_model, X_test, "Phase2/Plots/shap_summary_lgb.png")
+plot_shap_summary(lgb_model, X_test, "Phase2/Plots/Classification/LightGBM/shap_summary_lgb.png")
 
-# ------------- Session Duration Prediction (Regression) ------
+
+# ------------- Regression-------------------
 target_column = "session_duration"
 X_new = data.drop(columns=[target_column, "Label", "attack_detected"])
 y_new = data[target_column]
@@ -171,12 +178,16 @@ lgb_regressor.fit(X_train_new, y_train_new)
 y_pred_reg = lgb_regressor.predict(X_test_new)
 
 evaluate_model(y_test_new, y_pred_reg, "Session Duration Prediction", 'regression')
-plot_residuals(y_test_new, y_pred_reg, "Session Duration", "Phase2/Plots/residual_session_duration.png")
+plot_residuals(y_test_new, y_pred_reg, "Session Duration", 
+               "Phase2/Plots/Regression/LightGBM/residual_session_duration.png")
+
 plot_feature_importance(lgb_regressor, X_new.columns, 
-    "LightGBM Feature Importance (Session Duration)", 
-    "Phase2/Plots/lgb_feature_importance_session_duration.png"
-)
-plot_shap_summary(lgb_regressor, X_test_new, "Phase2/Plots/shap_summary_session_duration.png")
+                        "LightGBM Feature Importance (Session Duration)",
+                        "Phase2/Plots/Regression/LightGBM/lgb_feature_importance_session_duration.png")
+
+plot_shap_summary(lgb_regressor, X_test_new,
+                  "Phase2/Plots/Regression/LightGBM/shap_summary_session_duration.png")
+
 
 print(f"\nFeature counts:")
 print(f"- Intrusion detection: {len(X.columns)} features")
@@ -225,7 +236,7 @@ plt.show()
 # ---------------- K-Means Clustering ------------------
 # ---------------- Feature Selection ------------------
 selected_features = [
-    'Duration', 'SourcePort', 'DestinationPort', 'PacketCount', 'ByteCount',
+    'Duration', 'PacketCount', 'ByteCount',
     'network_packet_size', 'login_attempts', 'session_duration',
     'ip_reputation_score', 'failed_logins', 'unusual_time_access'
 ]
@@ -279,24 +290,6 @@ plt.legend(title="Traffic Type")
 plt.tight_layout()
 plt.savefig("Phase2/Plots/K-Means/kmeans_clusters_session_bytecount.png")
 plt.show()
-
-# ---------------- PCA for Cluster Visualization ------------------
-pca = PCA(n_components=2)
-# Using the already scaled test data (X_test_scaled)
-reduced_data = pca.fit_transform(X_test_scaled)
-
-# PCA scatter plot
-plt.figure(figsize=(10, 6))
-plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=kmeans_preds, cmap='viridis')
-plt.title("K-Means Clustering Visualization (PCA)")
-plt.xlabel("Traffic Type Variation Axis")
-plt.ylabel("Attack vs. Normal Variance Axis")
-plt.colorbar(label='Cluster')
-plt.grid(True)
-plt.tight_layout()
-plt.show()
-plt.savefig("Phase2/Plots/K-Means/clustering-Visualization-PCA.png")
-
 
 # ---------------- DBSCAN Clustering ------------------
 dbscan_features = [
