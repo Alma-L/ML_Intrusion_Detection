@@ -311,8 +311,10 @@ The **Random Forest** model was trained using all 18 network traffic features. I
 | Metric       | Score  | What It Means |
 |--------------|--------|---------------|
 | Accuracy     | 97.83% | Misleading due to imbalance |
-| F1-Score     | 97.50% | Only reflects normal class |
-| ROC AUC      | 97.56% | Good separation potential |
+| F1-Score     | 97.50% | Only reflects normal class  |
+| ROC AUC      | 97.56% | Good separation potential   |
+| Precision    | 100%   | All predicted anomalies were correct |
+| Recall       | 95.12% | Some true anomalies were missed |
 
 #### Intrusion Detection (Classification)
 ![Random Forest Classification Feature Importance](Phase2/Plots/Classification/RandomForest/feature_importance_rf.png)
@@ -365,11 +367,14 @@ This model used the same features and was fine-tuned with 100 boosting stages, a
 
 #### Quantitative Metrics:
 
+
 | Metric       | Score  | Interpretation |
 |--------------|--------|---------------|
-| Accuracy     | 89.85% | Better balanced performance |
+| Accuracy     | 89.85% | Better balanced performance  |
 | F1-Score     | 87.10% | Improved balance of precision/recall |
 | ROC AUC      | 88.57% | Good discriminative capability |
+| Precision    | 100%   | All predicted anomalies were true anomalies |
+| Recall       | 77.15% | Some anomalies were missed by the model
 
 #### Intrusion Detection (Classification)
 ![Gradient Boosting Classification Feature Importance](Phase2/Plots/Classification/GradientBoosting/feature_importance_gb.png)
@@ -424,11 +429,14 @@ Optimized for both speed and efficiency, this model used histogram-based learnin
 
 #### Quantitative Metrics:
 
+
 | Metric       | Score  | Significance |
 |--------------|--------|--------------|
 | Accuracy     | 92.74% | Best overall correctness |
 | F1-Score     | 91.10% | Most balanced precision/recall |
 | ROC AUC      | 91.83% | Strongest class separation |
+| Precision    | 100%   | All identified anomalies were correct|
+| Recall       | 83.66% | Some anomalies were missed |
 
 #### Intrusion Detection (Classification)
 ![LightGBM Classification Feature Importance](Phase2/Plots/Classification/LightGBM/feature_importance_lgb.png)
@@ -492,6 +500,8 @@ Trained only on normal traffic (`y=0`), this model isolates anomalies based on a
 | Accuracy     | 54.01% | Baseline performance |
 | F1-Score     | 49.52% | Balance between precision/recall |
 | ROC AUC      | 53.69% | Moderate separation ability |
+| Precision    | 48.33% | Many false positives present |
+| Recall       | 50.07% | Half of actual anomalies detected  |
 
 #### Isolation Forest Anomaly Detection
 
@@ -531,11 +541,14 @@ Clustering was performed on 11 selected, scaled features. We used 2 clusters (no
 
 #### Quantitative Metrics:
 
+
 | Metric       | Score  | Interpretation |
 |--------------|--------|----------------|
 | Accuracy     | 62.3%  | Moderate overall performance |
 | F1-Score     | 36.8%  | Low precision-recall balance |
 | ROC AUC      | 60.0%  | Marginal separation ability |
+| Precision    | 79.46% | Few false positives |
+| Recall       | 26.11% | Most actual anomalies missed |
 
 #### K-Means Clustering Visualization
 
@@ -579,7 +592,8 @@ DBSCAN is a density-based clustering algorithm that groups together closely pack
 | Accuracy     | 45.52%  | Below baseline performance |
 | F1-Score     | 61.63%  | Moderate precision-recall balance |
 | ROC AUC      | 50.83%  | Minimal separation ability |
-
+| Precision    | 44.85%  | High false positive rate |
+| Recall       | 98.49%  | Nearly all actual anomalies found  |
 ---
 ## Key Findings
 
