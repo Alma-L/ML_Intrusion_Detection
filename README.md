@@ -619,3 +619,15 @@ The trade-off lies in the availability of labeled data: supervised models requir
 The results highlight the importance of choosing the right model based on the dataset's characteristics and the availability of labeled data. Supervised models like LightGBM perform well with labeled data but struggle with attack detection. Unsupervised models such as Isolation Forest, while better at anomaly detection, face challenges in managing false positives. Future improvements might involve combining both approaches or exploring hybrid models.
 
 ---
+
+## Analysis and evaluation (retraining) and application of ML tools - Phase III
+
+This phase will include:
+
+1. Comprehensive analysis of model performance and dataset characteristics
+
+2. Systematic evaluation including model retraining with updated parameters and data
+
+3. Integration of modern ML tools through targeted implementation and validation
+
+Key outcomes include optimized model performance metrics, identification of improvement areas through error analysis, and establishment of enhanced training pipelines. The groundwork has been laid for subsequent deployment/testing phases, with clear documentation of methodologies and decision pathways.
