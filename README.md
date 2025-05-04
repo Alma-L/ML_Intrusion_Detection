@@ -631,3 +631,22 @@ This phase will include:
 3. Integration of modern ML tools through targeted implementation and validation
 
 Key outcomes include optimized model performance metrics, identification of improvement areas through error analysis, and establishment of enhanced training pipelines. The groundwork has been laid for subsequent deployment/testing phases, with clear documentation of methodologies and decision pathways.
+
+## Model Selection Criteria
+The chosen models span both supervised ensemble classifiers and unsupervised anomaly detectors, reflecting the dual needs of intrusion detection. 
+For supervised learning, Random Forest, Gradient Boosting, and LightGBM were selected due to their strong performance on high-dimensional tabular data and flexibility they naturally handle mixed numeric/categorical features and non‐linear patterns. These supervised models suit the classification task (attack vs. normal) and can be extended to regression (session duration prediction) by changing the objective.
+
+- **Random Forest** is robust to overfitting and provides feature‐importance insights
+- **Gradient Boosting** is known for high accuracy and can emphasize hard-to-classify examples (using techniques like class weighting)
+- **LightGBM** offers very fast training on large data and native support for categorical features
+
+For anomaly detection without labels, we included Isolation Forest, K-Means, and DBSCAN. Isolation Forest is a tree-based method that isolates outliers efficiently, K-Means clustering provides a simple binary split of traffic patterns and DBSCAN finds dense clusters while treating sparse points as anomalies. These unsupervised methods complement the supervised models by identifying unusual network behavior independently of labeled attacks.
+
+## Data Analysis (Retraining Cases)
+Prior to retraining, the merged dataset was thoroughly cleaned and transformed. All numeric outliers were removed or adjusted, resulting in no remaining extreme values, and skewed features were normalized. Categorical fields were encoded or binned for model compatibility. To address class imbalance, we applied SMOTE oversampling, yielding equal counts of attack and normal sessions.
+We retrained the models under several configurations:
+- **Baseline (Original Data):** Models were first trained on the imbalanced data to establish a reference.
+- **Balanced Training:** Models were then trained on the SMOTE-balanced data. This increased the representation of attack cases and reduced bias toward normal traffic.
+- **Weighted Classes:** In one scenario, Gradient Boosting used class weights during training to emphasize minority classes.
+- **Hyperparameter Tuning:** We also retrained with tuned settings (e.g. LightGBM with max depth=5 and L2 regularization, Gradient Boosting with early stopping). These adjustments were intended to optimize the bias–variance trade-off.
+- **Task-Specific Retraining:** Separate models were retrained for the classification task (predicting attack_detected) and for regression (predicting session_duration). Each task used the same input features but different targets, allowing us to compare performance shifts between classification and regression.
