@@ -5,13 +5,11 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import shap
-
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from lightgbm import LGBMClassifier
+from sklearn.model_selection import GridSearchCV
 
-# ------------------ Setup ------------------ #
 def create_directory(path):
     if not os.path.exists(path):
         os.makedirs(path)
@@ -27,10 +25,31 @@ y = data[target]
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# ------------------ Train Model ------------------ #
-model = LGBMClassifier(random_state=42)
-model.fit(X_train, y_train)
+# ------------------ Hyperparameter Tuning ------------------ #
+param_grid = {
+    'num_leaves': [51, 70],
+    'max_depth': [-1, 10, 20],
+    'learning_rate': [0.1, 0.05],
+    'n_estimators': [100, 200]
+}
 
+grid_search = GridSearchCV(
+    estimator=LGBMClassifier(random_state=42),
+    param_grid=param_grid,
+    scoring='accuracy',
+    cv=3,
+    n_jobs=-1,
+    verbose=1
+)
+
+grid_search.fit(X_train, y_train)
+best_model = grid_search.best_estimator_
+
+print(f"\nBest Parameters: {grid_search.best_params_}")
+
+# ------------------ Train Model ------------------ #
+model = best_model
+model.fit(X_train, y_train)
 # ------------------ Evaluate ------------------ #
 y_pred = model.predict(X_test)
 acc = accuracy_score(y_test, y_pred)
@@ -43,3 +62,4 @@ print(classification_report(y_test, y_pred))
 model.booster_.save_model("Phase 3/outputs/lgb_model.txt")
 
 print("\n Done: Model trained, evaluated, and explained.")
+
