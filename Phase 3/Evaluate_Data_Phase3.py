@@ -13,6 +13,10 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 
+# Set seeds for reproducibility
+torch.manual_seed(42)
+np.random.seed(42)
+
 # Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_num_threads(1)
@@ -46,6 +50,10 @@ y_train_tensor = torch.FloatTensor(y_train.values).reshape(-1, 1).to(device)
 X_test_tensor = torch.FloatTensor(X_test_3d).to(device)
 y_test_tensor = torch.FloatTensor(y_test.values).reshape(-1, 1).to(device)
 
+# For Autoencoder
+X_train_ae = torch.FloatTensor(X_train_scaled).to(device)
+X_test_ae = torch.FloatTensor(X_test_scaled).to(device)
+
 # Validation split for deep learning models
 val_split = 0.1
 val_size = int(len(X_train_tensor) * val_split)
@@ -54,15 +62,6 @@ val_tensor = TensorDataset(X_train_tensor[-val_size:], y_train_tensor[-val_size:
 
 train_loader = DataLoader(train_tensor, batch_size=64, shuffle=True)
 val_loader = DataLoader(val_tensor, batch_size=64)
-
-# Early stopping utility
-def early_stopping(losses, patience=3, min_delta=1e-4):
-    if len(losses) < patience + 1:
-        return False
-    for i in range(1, patience + 1):
-        if losses[-i] < losses[-i - 1] - min_delta:
-            return False
-    return True
 
 # ========== SVM ==========
 try:
@@ -116,9 +115,14 @@ try:
     optimizer = optim.Adam(model_cnn.parameters())
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.7)
 
-    val_losses = []
+    best_val_loss = float('inf')
+    patience = 3
+    counter = 0
+    min_delta = 1e-4
+
     for epoch in range(20):
         model_cnn.train()
+        train_loss = 0
         for x_batch, y_batch in train_loader:
             x_batch, y_batch = x_batch.to(device), y_batch.to(device)
             optimizer.zero_grad()
@@ -126,18 +130,27 @@ try:
             loss = criterion(output, y_batch)
             loss.backward()
             optimizer.step()
-        scheduler.step()
+            train_loss += loss.item()
+        train_loss /= len(train_loader)
+        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}")
 
         model_cnn.eval()
         with torch.no_grad():
             val_loss = 0
             for x_val, y_val in val_loader:
                 val_loss += criterion(model_cnn(x_val.to(device)), y_val.to(device)).item()
-            val_losses.append(val_loss / len(val_loader))
+            val_loss /= len(val_loader)
+            print(f"Epoch {epoch+1}, Val Loss: {val_loss:.4f}")
 
-        if early_stopping(val_losses):
-            print("Early stopped CNN at epoch", epoch)
-            break
+            # Early stopping logic
+            if val_loss < best_val_loss - min_delta:
+                best_val_loss = val_loss
+                counter = 0
+            else:
+                counter += 1
+                if counter >= patience:
+                    print("Early stopped CNN at epoch", epoch)
+                    break
 
     model_cnn.eval()
     with torch.no_grad():
@@ -174,12 +187,18 @@ try:
             return torch.sigmoid(self.fc2(x))
 
     model_lstm = LSTMNet(X_train_3d.shape[1:]).to(device)
+    criterion = nn.BCELoss()
     optimizer = optim.Adam(model_lstm.parameters())
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.7)
 
-    val_losses = []
+    best_val_loss = float('inf')
+    patience = 3
+    counter = 0
+    min_delta = 1e-4
+
     for epoch in range(20):
         model_lstm.train()
+        train_loss = 0
         for x_batch, y_batch in train_loader:
             x_batch, y_batch = x_batch.to(device), y_batch.to(device)
             optimizer.zero_grad()
@@ -187,18 +206,27 @@ try:
             loss = criterion(output, y_batch)
             loss.backward()
             optimizer.step()
-        scheduler.step()
+            train_loss += loss.item()
+        train_loss /= len(train_loader)
+        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}")
 
         model_lstm.eval()
         with torch.no_grad():
             val_loss = 0
             for x_val, y_val in val_loader:
                 val_loss += criterion(model_lstm(x_val.to(device)), y_val.to(device)).item()
-            val_losses.append(val_loss / len(val_loader))
+            val_loss /= len(val_loader)
+            print(f"Epoch {epoch+1}, Val Loss: {val_loss:.4f}")
 
-        if early_stopping(val_losses):
-            print("Early stopped LSTM at epoch", epoch)
-            break
+            # Early stopping logic
+            if val_loss < best_val_loss - min_delta:
+                best_val_loss = val_loss
+                counter = 0
+            else:
+                counter += 1
+                if counter >= patience:
+                    print("Early stopped LSTM at epoch", epoch)
+                    break
 
     model_lstm.eval()
     with torch.no_grad():
@@ -235,8 +263,7 @@ try:
                 nn.ReLU(),
                 nn.Linear(16, 32),
                 nn.ReLU(),
-                nn.Linear(32, input_dim),
-                nn.Sigmoid()
+                nn.Linear(32, input_dim)
             )
 
         def forward(self, x):
@@ -247,19 +274,31 @@ try:
     ae_model = Autoencoder(X_train_scaled.shape[1]).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(ae_model.parameters())
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.7)
 
-    ae_model.train()
-    for epoch in range(50):
-        optimizer.zero_grad()
-        output = ae_model(X_train_tensor)
-        loss = criterion(output, X_train_tensor)
-        loss.backward()
-        optimizer.step()
+    # DataLoader for Autoencoder
+    train_ae_dataset = TensorDataset(X_train_ae)
+    train_ae_loader = DataLoader(train_ae_dataset, batch_size=64, shuffle=True)
+
+    for epoch in range(10):  # Increased epochs
+        ae_model.train()
+        train_loss = 0
+        for x_batch in train_ae_loader:
+            x_batch = x_batch[0].to(device)  # Extract tensor from tuple
+            optimizer.zero_grad()
+            output = ae_model(x_batch)
+            loss = criterion(output, x_batch)
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item()
+        train_loss /= len(train_ae_loader)
+        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}")
+        scheduler.step()
 
     ae_model.eval()
     with torch.no_grad():
-        X_test_reconstructed = ae_model(X_test_tensor)
-    print("Autoencoder Reconstruction Error:", np.mean((X_test_tensor.cpu().numpy() - X_test_reconstructed.cpu().numpy())**2))
+        X_test_reconstructed = ae_model(X_test_ae)
+    print("Autoencoder Reconstruction Error:", np.mean((X_test_ae.cpu().numpy() - X_test_reconstructed.cpu().numpy())**2))
 
     # Save the Autoencoder model
     torch.save(ae_model.state_dict(), "outputs/autoencoder_model.txt")
