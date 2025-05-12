@@ -276,15 +276,22 @@ try:
     optimizer = optim.Adam(ae_model.parameters())
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.7)
 
-    # DataLoader for Autoencoder
-    train_ae_dataset = TensorDataset(X_train_ae)
+    # Validation split for Autoencoder
+    val_split = 0.1
+    val_size = int(len(X_train_ae) * val_split)
+    train_ae_dataset = TensorDataset(X_train_ae[:-val_size])
+    val_ae_dataset = TensorDataset(X_train_ae[-val_size:])
     train_ae_loader = DataLoader(train_ae_dataset, batch_size=64, shuffle=True)
+    val_ae_loader = DataLoader(val_ae_dataset, batch_size=64)
 
-    for epoch in range(10):  # Increased epochs
+    train_losses = []
+    val_losses = []
+
+    for epoch in range(50):  # Using 100 epochs
         ae_model.train()
         train_loss = 0
         for x_batch in train_ae_loader:
-            x_batch = x_batch[0].to(device)  # Extract tensor from tuple
+            x_batch = x_batch[0].to(device)
             optimizer.zero_grad()
             output = ae_model(x_batch)
             loss = criterion(output, x_batch)
@@ -292,7 +299,19 @@ try:
             optimizer.step()
             train_loss += loss.item()
         train_loss /= len(train_ae_loader)
-        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}")
+        train_losses.append(train_loss)
+
+        ae_model.eval()
+        with torch.no_grad():
+            val_loss = 0
+            for x_batch in val_ae_loader:
+                x_batch = x_batch[0].to(device)
+                output = ae_model(x_batch)
+                val_loss += criterion(output, x_batch).item()
+            val_loss /= len(val_ae_loader)
+            val_losses.append(val_loss)
+
+        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
         scheduler.step()
 
     ae_model.eval()
@@ -302,6 +321,18 @@ try:
 
     # Save the Autoencoder model
     torch.save(ae_model.state_dict(), "outputs/autoencoder_model.txt")
+
+    # Plotting Training and Validation Loss
+    plt.figure(figsize=(8, 6))
+    plt.plot(range(1, len(train_losses) + 1), train_losses, label='Training Loss', color='blue')
+    plt.plot(range(1, len(val_losses) + 1), val_losses, label='Validation Loss', color='orange')
+    plt.xlabel('Epoch')
+    plt.ylabel('MSE Loss')
+    plt.title('Autoencoder Training and Validation Loss')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('outputs/autoencoder_loss.png')
+    plt.close()
 
 except Exception as e:
     print("Autoencoder Error:", e)
