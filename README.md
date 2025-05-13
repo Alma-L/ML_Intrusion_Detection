@@ -650,3 +650,37 @@ We retrained the models under several configurations:
 - **Weighted Classes:** In one scenario, Gradient Boosting used class weights during training to emphasize minority classes.
 - **Hyperparameter Tuning:** We also retrained with tuned settings (e.g. LightGBM with max depth=5 and L2 regularization, Gradient Boosting with early stopping). These adjustments were intended to optimize the bias–variance trade-off.
 - **Task-Specific Retraining:** Separate models were retrained for the classification task (predicting attack_detected) and for regression (predicting session_duration). Each task used the same input features but different targets, allowing us to compare performance shifts between classification and regression.
+
+###  Models Trained 
+
+| Model       | Description                                         |
+| ----------- | --------------------------------------------------- |
+| SVM         | Support Vector Machine with GridSearch optimization |
+| CNN         | Convolutional Neural Network                        |
+| LSTM        | Long Short-Term Memory Network                      |
+| Autoencoder | Autoencoder used for anomaly-based detection        |
+
+### Model Performance Comparison
+
+| Model           | Accuracy | Precision (Class 0 / 1) | Recall (Class 0 / 1) | F1-Score (Class 0 / 1) | Notes                                |
+| --------------- | -------- | ----------------------- | -------------------- | ---------------------- | ------------------------------------ |
+| **SVM**         | 0.854    | 0.83 / 0.90             | 0.93 / 0.75          | 0.88 / 0.82            | Balanced but lower recall on Class 1 |
+| **CNN**         | 0.889    | 0.84 / 0.99             | 1.00 / 0.75          | 0.91 / 0.85            | Very high precision for Class 1      |
+| **LSTM**        | 0.900    | 0.85 / 0.99             | 0.99 / 0.78          | 0.92 / 0.87            | Best overall performance             |
+| **Autoencoder** | —        | —                       | —                    | —                      | —  |
+###  Notes
+- **Class 0** = Normal traffic  
+- **Class 1** = Intrusion/malicious activity  
+- **Autoencoder** doesn't use standard metrics (like precision/recall) but evaluates anomalies via reconstruction error.
+
+## Autoencoder Loss Curve
+
+The following plot shows how the Mean Squared Error (MSE) loss evolved during training of the autoencoder:
+
+![Autoencoder Loss Curve](./outputs/autoencoder_loss.png)
+
+- **Blue Line**: Training Loss  
+- **Orange Line**: Validation Loss  
+- The model shows stable convergence with very close training and validation losses.
+
+---
