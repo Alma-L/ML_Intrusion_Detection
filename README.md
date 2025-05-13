@@ -667,7 +667,8 @@ We retrained the models under several configurations:
 | **SVM**         | 0.854    | 0.83 / 0.90             | 0.93 / 0.75          | 0.88 / 0.82            | Balanced but lower recall on Class 1 |
 | **CNN**         | 0.889    | 0.84 / 0.99             | 1.00 / 0.75          | 0.91 / 0.85            | Very high precision for Class 1      |
 | **LSTM**        | 0.900    | 0.85 / 0.99             | 0.99 / 0.78          | 0.92 / 0.87            | Best overall performance             |
-| **Autoencoder** | —        | —                       | —                    | —                      | —  |
+| **Autoencoder** | —        | —                       | —                    | —                      | Reconstruction Error: 0.223
+  |
 ###  Notes
 - **Class 0** = Normal traffic  
 - **Class 1** = Intrusion/malicious activity  
