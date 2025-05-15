@@ -685,3 +685,68 @@ The following plot shows how the Mean Squared Error (MSE) loss evolved during tr
 - The model shows stable convergence with very close training and validation losses.
 
 ---
+
+## Visual Analytics of Intrusion Detection with PowerBI
+
+This section provides a collection of insightful visualizations generated with PowerBI, aimed at analyzing attack detection patterns across multiple dimensions—including protocol traffic, browser usage, login behavior, and prediction probabilities. These charts and summaries help evaluate the model’s performance, highlight potential detection gaps, and reveal behavioral trends that support a more robust cybersecurity strategy.
+
+---
+
+### Model vs. Reality
+![ Attack_Detect vd Predict](./PowerBI/image6.png)
+
+This plot visualizes actual attack detection results (left) vs. model prediction (right) during training. The left plot shows 43.58% (37.28K) of traffic as malicious (attack_detected=1) and 56.42% (48.26K) as normal. The right plot shows the prediction made by the model: 47.02% (40.22K) as attacks (Prediction=1) and 52.98% (45.32K) as normal. The negligible difference (3.44% more predicted attacks than captured) shows the model might be over-flagging risks or spotting patterns the initial detection platform has not noticed.
+
+---
+### Network Protocol Insights
+![ Protocol Traffic ](./PowerBI/image1.png)
+
+Our top protocol shows over 60,000 safe connections, with minimal threats detected, suggesting strong protection. Surprisingly, UDP traffic mirrors this safe pattern—despite its known vulnerabilities—indicating either excellent defense or potential blind spots.
+
+The dataset has a nearly balanced 47% attack vs. 53% normal split—ideal for training ML models. However, detection lags slightly: only 43.6% of attacks are flagged, leaving a 3.4% gap that may indicate false negatives or mislabeling.
+
+---
+
+### Browser Security Threat Analysis
+![ Protocol Traffic ](./PowerBI/image2.png)
+
+This visualization highlights browser-based patterns in attack detection. Microsoft Edge shows around 80,000 safe sessions and very few attacks, suggesting strong security or low targeting. Safari and Firefox follow similar trends, with Safari having nearly 100,000 safe connections and minimal threats.
+
+The "Unknown" browser also shows high safe traffic with no detected attacks, which may reflect strong security or monitoring blind spots. Overall, the data suggests that most attacks likely target non-browser vectors, and Edge’s performance challenges assumptions about Microsoft product vulnerabilities.
+
+
+---
+### Packet Count and Attack Detection by Protocol Type
+
+![ Protocol Traffic ](./PowerBI/image3.png)
+#### `Chart: Packet Count by Duration`
+This chart visualizes the **distribution of packet counts** over various **duration intervals**:
+- **X-axis**: Duration bins (e.g., `12.65`, `3.45`, etc.)
+- **Y-axis (Left & Right)**: Count of packets (shown as both bar and line)
+- This visualization helps identify traffic intensity at different session lengths, highlighting durations with high packet counts.
+
+#### `Table: Attack Detection by Protocol Type`
+
+The table provides a **summary of detected attacks**, grouped by:
+- **Protocol_TCP**: Whether TCP protocol was used (`True` or `False`)
+- **Protocol_UDP**: Whether UDP protocol was used (`True` or `False`)
+- **Sum of attack_detected**: Total number of detected attacks under each condition
+
+----
+### Login Analysis by Session Duration and Failed Logins
+![ Protocol Traffic ](./PowerBI/image4.png)
+
+This visualization explores user login behavior and its link to attack detection, using login attempts and failed logins, split into Attack and Normal labels for comparison.
+
+`Session Duration by Login Attempts` - The top chart shows that most sessions cluster around 3–5 login attempts for both labels. However, attack sessions are more frequent with higher login attempts (6+), while normal sessions decline, indicating a potential sign of brute-force or scripted activity.
+
+`Duration Count by Failed Logins` - The bottom chart groups session durations by failed login values. Most sessions occur at low failed login counts, but attack sessions are slightly higher even at 0.0, suggesting that not all malicious actions involve failed logins. Higher failed login values are rare but more often seen in attacks.
+
+---
+### Prediction Probability
+![ Protocol Traffic ](./PowerBI/image5.png)
+
+`Count of Predictions by Probability` The horizontal bar chart plots the **count of predictions** against their corresponding **prediction probability values**, ranging from `0.0` to `1.0` (with some decimal precision). Each bar represents how frequently the model made predictions with a specific confidence level.
+
+---
+
