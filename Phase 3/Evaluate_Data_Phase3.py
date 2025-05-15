@@ -12,6 +12,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
+import joblib
 
 # Set seeds for reproducibility
 torch.manual_seed(42)
@@ -74,16 +75,26 @@ try:
     y_pred_svm = best_svm.predict(X_test_scaled)
     print("SVM Accuracy:", accuracy_score(y_test, y_pred_svm))
     print(classification_report(y_test, y_pred_svm))
-    # Save the model (SVM doesn't have a booster_ attribute like LightGBM)
-    import joblib
-    joblib.dump(best_svm, "outputs/svm_model.txt")
+    
+    # Save the SVM model and report
+    joblib.dump(best_svm, "outputs/svm_model.pkl")
+    with open("outputs/svm_model_details.txt", "w") as f:
+        f.write(f"SVM Model Configuration:\n")
+        f.write(f"Best parameters: {svm_grid.best_params_}\n")
+        f.write(f"Best score: {svm_grid.best_score_}\n")
+        f.write(f"Number of support vectors: {best_svm.n_support_}\n")
+        f.write(f"Classes: {best_svm.classes_}\n")
+        f.write(f"Intercept: {best_svm.intercept_}\n")
+        f.write(f"Gamma: {best_svm.gamma}\n")
+    
     report_svm = classification_report(y_test, y_pred_svm)
-    print(report_svm)
     with open("outputs/svm_report.txt", "w") as f:
         f.write(report_svm)
 
 except Exception as e:
     print("SVM Error:", e)
+    import traceback
+    traceback.print_exc()
 
 # ========== CNN ==========
 try:
@@ -157,16 +168,26 @@ try:
         y_pred_cnn = (model_cnn(X_test_tensor) > 0.5).float().cpu().numpy()
     print("CNN Accuracy:", accuracy_score(y_test, y_pred_cnn))
     print(classification_report(y_test, y_pred_cnn))
-    report_cnn = classification_report(y_test, y_pred_cnn)
-    print(report_cnn)
-    with open("outputs/cnn_report.txt", "w") as f:
-        f.write(report_cnn)
-
-    # Save the CNN model
-    torch.save(model_cnn.state_dict(), "outputs/cnn_model.txt")
+    
+    # Save the CNN model details to a text file
+    with open("outputs/cnn_model_details.txt", "w") as f:
+        f.write("CNN Model Architecture:\n")
+        f.write(str(model_cnn) + "\n\n")
+        f.write("Model State Dictionary:\n")
+        for name, param in model_cnn.state_dict().items():
+            f.write(f"{name}: {param.size()}\n")
+            if param.numel() < 10:  # Only write small tensors completely
+                f.write(f"{param}\n")
+            else:
+                f.write(f"[Tensor of size {tuple(param.size())} - too large to display]\n")
+    
+    # Save the model weights
+    torch.save(model_cnn.state_dict(), "outputs/cnn_model.pth")
 
 except Exception as e:
     print("CNN Error:", e)
+    import traceback
+    traceback.print_exc()
 
 # ========== LSTM ==========
 try:
@@ -233,16 +254,26 @@ try:
         y_pred_lstm = (model_lstm(X_test_tensor) > 0.5).float().cpu().numpy()
     print("LSTM Accuracy:", accuracy_score(y_test, y_pred_lstm))
     print(classification_report(y_test, y_pred_lstm))
-    report_lstm = classification_report(y_test, y_pred_lstm)
-    print(report_lstm)
-    with open("outputs/lstm_report.txt", "w") as f:
-        f.write(report_lstm)
-
-    # Save the LSTM model
-    torch.save(model_lstm.state_dict(), "outputs/lstm_model.txt")
+    
+    # Save the LSTM model details to a text file
+    with open("outputs/lstm_model_details.txt", "w") as f:
+        f.write("LSTM Model Architecture:\n")
+        f.write(str(model_lstm) + "\n\n")
+        f.write("Model State Dictionary:\n")
+        for name, param in model_lstm.state_dict().items():
+            f.write(f"{name}: {param.size()}\n")
+            if param.numel() < 10:  # Only write small tensors completely
+                f.write(f"{param}\n")
+            else:
+                f.write(f"[Tensor of size {tuple(param.size())} - too large to display]\n")
+    
+    # Save the model weights
+    torch.save(model_lstm.state_dict(), "outputs/lstm_model.pth")
 
 except Exception as e:
     print("LSTM Error:", e)
+    import traceback
+    traceback.print_exc()
 
 # ========== Autoencoder ==========
 try:
@@ -287,7 +318,7 @@ try:
     train_losses = []
     val_losses = []
 
-    for epoch in range(50):  # Using 100 epochs
+    for epoch in range(50):
         ae_model.train()
         train_loss = 0
         for x_batch in train_ae_loader:
@@ -319,8 +350,23 @@ try:
         X_test_reconstructed = ae_model(X_test_ae)
     print("Autoencoder Reconstruction Error:", np.mean((X_test_ae.cpu().numpy() - X_test_reconstructed.cpu().numpy())**2))
 
-    # Save the Autoencoder model
-    torch.save(ae_model.state_dict(), "outputs/autoencoder_model.txt")
+    # Save the Autoencoder model details to a text file
+    with open("outputs/autoencoder_model_details.txt", "w") as f:
+        f.write("Autoencoder Model Architecture:\n")
+        f.write(str(ae_model) + "\n\n")
+        f.write("Model State Dictionary:\n")
+        for name, param in ae_model.state_dict().items():
+            f.write(f"{name}: {param.size()}\n")
+            if param.numel() < 10:  # Only write small tensors completely
+                f.write(f"{param}\n")
+            else:
+                f.write(f"[Tensor of size {tuple(param.size())} - too large to display]\n")
+        f.write("\nTraining Metrics:\n")
+        f.write(f"Final Training Loss: {train_losses[-1]:.4f}\n")
+        f.write(f"Final Validation Loss: {val_losses[-1]:.4f}\n")
+    
+    # Save the model weights
+    torch.save(ae_model.state_dict(), "outputs/autoencoder_model.pth")
 
     # Plotting Training and Validation Loss
     plt.figure(figsize=(8, 6))
@@ -336,3 +382,5 @@ try:
 
 except Exception as e:
     print("Autoencoder Error:", e)
+    import traceback
+    traceback.print_exc()
