@@ -1,0 +1,25 @@
+LSTM Model Architecture:
+LSTMNet(
+  (lstm): LSTM(1, 32, batch_first=True)
+  (fc1): Linear(in_features=32, out_features=16, bias=True)
+  (dropout): Dropout(p=0.3, inplace=False)
+  (fc2): Linear(in_features=16, out_features=1, bias=True)
+)
+
+Model State Dictionary:
+lstm.weight_ih_l0: torch.Size([128, 1])
+[Tensor of size (128, 1) - too large to display]
+lstm.weight_hh_l0: torch.Size([128, 32])
+[Tensor of size (128, 32) - too large to display]
+lstm.bias_ih_l0: torch.Size([128])
+[Tensor of size (128,) - too large to display]
+lstm.bias_hh_l0: torch.Size([128])
+[Tensor of size (128,) - too large to display]
+fc1.weight: torch.Size([16, 32])
+[Tensor of size (16, 32) - too large to display]
+fc1.bias: torch.Size([16])
+[Tensor of size (16,) - too large to display]
+fc2.weight: torch.Size([1, 16])
+[Tensor of size (1, 16) - too large to display]
+fc2.bias: torch.Size([1])
+tensor([-1.3328])
