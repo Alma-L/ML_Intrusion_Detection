@@ -673,6 +673,49 @@ We retrained the models under several configurations:
 - **Class 0** = Normal traffic  
 - **Class 1** = Intrusion/malicious activity  
 - **Autoencoder** doesn't use standard metrics (like precision/recall) but evaluates anomalies via reconstruction error.
+## More detalited analysis for each algorithm
+ ### 1. Support Vector Machine (SVM)
+
+ | Metric       | Class 0   | Class 1 |
+| ------------ | --------- | ------- |
+| Precision    | 0.83      | 0.90    |
+| Recall       | 0.93      | 0.75    |
+| F1-Score     | 0.88      | 0.82    |
+| **Accuracy** | **0.854** |         |
+
+SVM performs well for class 0 but has reduced recall for class 1, indicating that it misses a notable portion of true positive intrusions.
+
+### 2. Convolutional Neural Network (CNN)
+
+| Metric       | Class 0   | Class 1 |
+| ------------ | --------- | ------- |
+| Precision    | 0.84      | 0.99    |
+| Recall       | 1.00      | 0.75    |
+| F1-Score     | 0.91      | 0.85    |
+| **Accuracy** | **0.889** |         |
+CNN achieves perfect recall for class 0 and improves overall balance between classes. It outperforms SVM, especially in precision for class 1.
+### 3. Long Short-Term Memory (LSTM)
+
+| Metric       | Class 0   | Class 1 |
+| ------------ | --------- | ------- |
+| Precision    | 0.85      | 0.99    |
+| Recall       | 0.99      | 0.78    |
+| F1-Score     | 0.92      | 0.87    |
+| **Accuracy** | **0.900** |         |
+
+LSTM offers the best performance overall, with very high precision and recall across both classes. Especially strong in capturing temporal patterns in the data.
+
+### 4. Autoencoder
+| Epoch | Train Loss | Validation Loss |
+| ----- | ---------- | --------------- |
+| 1     | 0.5933     | 0.3965          |
+| 10    | 0.2829     | 0.2822          |
+| 20    | 0.2522     | 0.2949          |
+| 30    | 0.2446     | 0.2443          |
+| 40    | 0.2295     | 0.2290          |
+| 50    | **0.2230** | **0.2231**      |
+
+The Autoencoder achieves a very low reconstruction error by the final epoch. It's ideal for anomaly detection, particularly when labels are unavailable.
 
 ## Autoencoder Loss Curve
 
