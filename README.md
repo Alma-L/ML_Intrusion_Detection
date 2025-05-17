@@ -693,7 +693,9 @@ SVM performs well for class 0 but has reduced recall for class 1, indicating tha
 | Recall       | 1.00      | 0.75    |
 | F1-Score     | 0.91      | 0.85    |
 | **Accuracy** | **0.889** |         |
+
 CNN achieves perfect recall for class 0 and improves overall balance between classes. It outperforms SVM, especially in precision for class 1.
+
 ### 3. Long Short-Term Memory (LSTM)
 
 | Metric       | Class 0   | Class 1 |
